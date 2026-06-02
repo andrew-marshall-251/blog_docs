@@ -2,13 +2,14 @@ openapi: 3.1.0
 info:
   title: Blog API
   version: 1.0.0
-  description: API documentation for the Blog platform.
+  description: |
+    API documentation for the Blog platform.
 
-      ![Blog API preview](./blog_entities.png)
+    ![Blog API preview](https://andrew-marshall-251.github.io/blog_docs/blog_entities.png)
 
-      [Figma wireframe](https://www.figma.com/board/vwUN87Lt6QTaizSl22KjaE/Untitled?t=TJGdmwttwVUuhtod-6)
+    [Figma wireframe](https://www.figma.com/board/vwUN87Lt6QTaizSl22KjaE/Untitled?t=TJGdmwttwVUuhtod-6)
 
-      Gotta learn frontend now.
+    Gotta learn frontend now.
 servers:
   - url: /api
     description: Relative API base path
