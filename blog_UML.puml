@@ -1,0 +1,76 @@
+@startuml
+package "Domain Entities" {
+	class User {
+		- Long id
+		- String username
+		- String email
+		- Mascot mascot
+		- String bio
+		- String passwordHash
+		- Set<Role> roles
+	}
+
+	class Post {
+		- Long id
+		- User author
+		- Thread thread
+		- String title
+		- String body
+		- String slug
+		- Status status
+		- LocalDateTime createdAt
+		- LocalDateTime lastUpdatedAt
+		- LocalDateTime publishedAt
+	}
+
+	class Comment {
+		- Long id
+		- User author
+		- Post post
+		- Comment parent
+		- String body
+		- LocalDateTime createdAt
+		- LocalDateTime lastUpdatedAt
+		- Boolean isDeleted
+	}
+
+	class Thread {
+		- Long id
+		- String name
+	}
+
+	class Mascot {
+		- Long id
+		- String name
+		- String imgUrl
+	}
+
+	enum Role {
+		ROLE_USER
+		ROLE_ADMIN
+	}
+
+	enum Status {
+		DRAFT
+		PUBLISHED
+		ARCHIVED
+	}
+
+	note right of Mascot
+		Admin-managed.
+	end note
+
+	note right of Thread
+		Admin-managed.
+	end note
+}
+
+User "1" -- "0..*" Post : authors >
+User "1" -- "0..*" Comment : writes >
+User "0..*" -- "1" Mascot : selects >
+User "0..*" -- "0..*" Role : has >
+Thread "1" *-- "0..*" Post : contains >
+Post "1" *-- "0..*" Comment : contains >
+Comment "0..1" <-- "0..*" Comment : parent / replies
+Post ..> Status : state
+@enduml

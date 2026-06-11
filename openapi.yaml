@@ -9,6 +9,10 @@ info:
 
     [Figma wireframe](https://www.figma.com/board/vwUN87Lt6QTaizSl22KjaE/Untitled?t=TJGdmwttwVUuhtod-6)
 
+    User-uploaded images are stored in Amazon S3. The API creates short-lived
+    presigned upload URLs so clients can upload image files directly to S3
+    without exposing AWS credentials.
+
     Gotta learn frontend now.
 servers:
   - url: /api
@@ -22,6 +26,7 @@ tags:
   - name: Comments
   - name: Threads
   - name: Mascots
+  - name: Images
 
 paths:
   /auth/login:
@@ -431,7 +436,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PostRequest"
+              $ref: "#/components/schemas/UpdatePostRequest"
             example:
               postTitle: How to Swim
               threadId: 8
@@ -457,7 +462,7 @@ paths:
                 publishedAt: "2026-05-01T23:24:00Z"
                 status: PUBLISHED
         "400":
-          $ref: "#/components/responses/PostValidationFailure"
+          $ref: "#/components/responses/PostUpdateValidationFailure"
         "401":
           $ref: "#/components/responses/NotLoggedIn"
         "403":
@@ -906,8 +911,10 @@ paths:
               example:
                 - mascotId: 2
                   mascotName: Capybara
+                  mascotImgUrl: /images/mascots/capybara.webp
                 - mascotId: 3
                   mascotName: Owl
+                  mascotImgUrl: /images/mascots/owl.webp
     post:
       tags: [Mascots]
       summary: Create mascot
@@ -923,6 +930,7 @@ paths:
               $ref: "#/components/schemas/MascotRequest"
             example:
               mascotName: Moose
+              mascotImgUrl: /images/mascots/moose.webp
       responses:
         "201":
           description: Mascot created.
@@ -933,6 +941,7 @@ paths:
               example:
                 mascotId: 5
                 mascotName: Moose
+                mascotImgUrl: /images/mascots/moose.webp
         "400":
           $ref: "#/components/responses/MascotValidationFailure"
         "401":
@@ -966,12 +975,13 @@ paths:
               example:
                 mascotId: 10
                 mascotName: Lion
+                mascotImgUrl: /images/mascots/lion.webp
         "404":
           $ref: "#/components/responses/MascotDoesNotExist"
     patch:
       tags: [Mascots]
-      summary: Rename mascot
-      description: Rename a mascot in the platform. Admin-only.
+      summary: Update mascot
+      description: Update a mascot in the platform. Admin-only.
       operationId: updateMascot
       security:
         - bearerAuth: []
@@ -982,9 +992,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/MascotRequest"
+              $ref: "#/components/schemas/UpdateMascotRequest"
             example:
               mascotName: Lion
+              mascotImgUrl: /images/mascots/lion.webp
       responses:
         "200":
           description: Mascot updated.
@@ -995,8 +1006,9 @@ paths:
               example:
                 mascotId: 10
                 mascotName: Lion
+                mascotImgUrl: /images/mascots/lion.webp
         "400":
-          $ref: "#/components/responses/MascotValidationFailure"
+          $ref: "#/components/responses/MascotUpdateValidationFailure"
         "401":
           $ref: "#/components/responses/NotLoggedIn"
         "403":
@@ -1012,6 +1024,44 @@ paths:
           $ref: "#/components/responses/MascotDoesNotExist"
         "409":
           $ref: "#/components/responses/MascotNameTaken"
+
+  /images/upload-url:
+    post:
+      tags: [Images]
+      summary: Create image upload URL
+      description: Create a short-lived presigned S3 URL for uploading an image. The client uploads the file to uploadUrl using the returned HTTP method and headers, then stores imageKey or publicUrl with the related resource.
+      operationId: createImageUploadUrl
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateImageUploadRequest"
+            example:
+              fileName: hero.webp
+              contentType: image/webp
+              imagePurpose: POST_IMAGE
+      responses:
+        "201":
+          description: Image upload URL created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageUpload"
+              example:
+                imageKey: posts/4/01908d6c-2f70-7b7a-8c7d-f274b84d7d91.webp
+                uploadUrl: https://blog-images.example.s3.amazonaws.com/posts/4/01908d6c-2f70-7b7a-8c7d-f274b84d7d91.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256
+                publicUrl: https://cdn.example.com/posts/4/01908d6c-2f70-7b7a-8c7d-f274b84d7d91.webp
+                method: PUT
+                expiresAt: "2026-05-01T23:29:00Z"
+                headers:
+                  Content-Type: image/webp
+        "400":
+          $ref: "#/components/responses/ImageUploadValidationFailure"
+        "401":
+          $ref: "#/components/responses/NotLoggedIn"
 
 components:
   securitySchemes:
@@ -1205,13 +1255,13 @@ components:
             message: Validation failed
             fields:
               - field: username
-                message: Username is required
+                message: Username must be between 3 and 30 characters
               - field: email
-                message: Email is required
+                message: Email must be a valid email address
               - field: mascotId
-                message: Mascot Id is required
+                message: Mascot Id must be a positive integer
               - field: bio
-                message: Bio is required
+                message: Bio must be 500 characters or fewer
     PostValidationFailure:
       description: Post validation failed.
       content:
@@ -1228,6 +1278,22 @@ components:
                 message: Thread is required
               - field: postBody
                 message: Post body is required
+    PostUpdateValidationFailure:
+      description: Post update validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+          example:
+            code: VALIDATION_FAILURE
+            message: Validation failed
+            fields:
+              - field: postTitle
+                message: Post title must be 120 characters or fewer
+              - field: threadId
+                message: Thread Id must be a positive integer
+              - field: postBody
+                message: Post body must be 50000 characters or fewer
     ThreadValidationFailure:
       description: Thread validation failed.
       content:
@@ -1252,6 +1318,38 @@ components:
             fields:
               - field: mascotName
                 message: Mascot name is required
+              - field: mascotImgUrl
+                message: Mascot image URL is required
+    MascotUpdateValidationFailure:
+      description: Mascot update validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+          example:
+            code: VALIDATION_FAILURE
+            message: Validation failed
+            fields:
+              - field: mascotName
+                message: Mascot name must be 50 characters or fewer
+              - field: mascotImgUrl
+                message: Mascot image URL must be a valid URL or path
+    ImageUploadValidationFailure:
+      description: Image upload validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+          example:
+            code: VALIDATION_FAILURE
+            message: Validation failed
+            fields:
+              - field: fileName
+                message: File name is required
+              - field: contentType
+                message: Content type must be an allowed image type
+              - field: imagePurpose
+                message: Image purpose is required
 
   schemas:
     Error:
@@ -1329,7 +1427,7 @@ components:
           type: string
     UpdateUserRequest:
       type: object
-      required: [username, email, mascotId, bio]
+      minProperties: 1
       properties:
         username:
           type: string
@@ -1380,6 +1478,17 @@ components:
     PostRequest:
       type: object
       required: [postTitle, threadId, postBody]
+      properties:
+        postTitle:
+          type: string
+        threadId:
+          type: integer
+          format: int64
+        postBody:
+          type: string
+    UpdatePostRequest:
+      type: object
+      minProperties: 1
       properties:
         postTitle:
           type: string
@@ -1556,16 +1665,71 @@ components:
           type: integer
     MascotRequest:
       type: object
-      required: [mascotName]
+      required: [mascotName, mascotImgUrl]
       properties:
         mascotName:
           type: string
+        mascotImgUrl:
+          type: string
+    UpdateMascotRequest:
+      type: object
+      minProperties: 1
+      properties:
+        mascotName:
+          type: string
+        mascotImgUrl:
+          type: string
     Mascot:
       type: object
-      required: [mascotId, mascotName]
+      required: [mascotId, mascotName, mascotImgUrl]
       properties:
         mascotId:
           type: integer
           format: int64
         mascotName:
           type: string
+        mascotImgUrl:
+          type: string
+    ImagePurpose:
+      type: string
+      enum: [POST_IMAGE, PROFILE_IMAGE, MASCOT_IMAGE]
+    CreateImageUploadRequest:
+      type: object
+      required: [fileName, contentType, imagePurpose]
+      properties:
+        fileName:
+          type: string
+          description: Original image file name. The API may replace this with a generated S3 object key.
+          examples:
+            - hero.webp
+        contentType:
+          type: string
+          enum: [image/jpeg, image/png, image/webp, image/gif]
+        imagePurpose:
+          $ref: "#/components/schemas/ImagePurpose"
+    ImageUpload:
+      type: object
+      required: [imageKey, uploadUrl, method, expiresAt, headers]
+      properties:
+        imageKey:
+          type: string
+          description: S3 object key to store with the related post, profile, or mascot.
+        uploadUrl:
+          type: string
+          format: uri
+          description: Short-lived presigned S3 URL used by the client to upload the image.
+        publicUrl:
+          type: string
+          format: uri
+          description: Public CDN URL for the image when the image is intended to be publicly visible.
+        method:
+          type: string
+          enum: [PUT]
+        expiresAt:
+          type: string
+          format: date-time
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Headers the client must send when uploading to S3.
