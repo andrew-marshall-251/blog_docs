@@ -97,13 +97,13 @@ public class SecurityConfig {
 					.orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 			return User.builder()
 					.username(user.getUsername())
-					.password(user.getPassword())
+					.password(user.getPasswordHash())
 					.authorities(user.getRoles()
-							.stream()
-							.map(SimpleGrantedAuthority::new)
-							.collect(Collectors.toList()))
-					.build();
-		};
+								.stream()
+								.map(role -> new SimpleGrantedAuthority(role.name()))
+								.collect(Collectors.toList()))
+						.build();
+			};
 	}
 
 //	====TEST USERS====

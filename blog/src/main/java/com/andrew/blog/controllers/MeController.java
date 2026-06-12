@@ -47,11 +47,11 @@ public class MeController {
 	}
 
 	@PatchMapping("/users/me/password")
-	public ResponseEntity<SelfResponse> updateSelfPassword(
+	public ResponseEntity<UpdateSelfResponse> updateSelfPassword(
 			@Valid @RequestBody UpdateSelfPasswordRequest request,
 			Authentication auth) {
 		String username = auth.getName();
-		SelfResponse response = meService.updateSelfPassword(request, username);
+		UpdateSelfResponse response = meService.updateSelfPassword(request, username);
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(response);
