@@ -1,0 +1,33 @@
+package com.andrew.blog.dtos.requests;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Setter;
+import lombok.Getter;
+
+@Getter @Setter
+public class CreateUserRequest {
+	@NotBlank
+	@Size(min=3, max=30)
+	@Pattern(regexp="^[A-Za-z0-9_]+$")
+	private String username;
+
+	@NotBlank
+	@Email
+	@Size(max=254)
+	private String email;
+
+	@NotBlank
+	@Size(min = 8)
+	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$")
+	private String password;
+
+	@NotBlank
+	private Long mascotId;
+
+	@NotBlank
+	@Size(max=300)
+	private String bio;
+}

@@ -1,17 +1,15 @@
 package com.andrew.blog.services;
 
-import com.andrew.blog.dtos.requests.CreatedUserRequest;
-import com.andrew.blog.dtos.responses.CreateThreadResponse;
-import com.andrew.blog.dtos.responses.PostListResponse;
-import com.andrew.blog.dtos.responses.ThreadListResponse;
-import com.andrew.blog.dtos.responses.ThreadResponse;
+import com.andrew.blog.dtos.requests.CreateThreadRequest;
+import com.andrew.blog.dtos.requests.CreateUserRequest;
+import com.andrew.blog.dtos.requests.UpdateThreadRequest;
+import com.andrew.blog.dtos.responses.*;
 import jakarta.validation.Valid;
-import org.springframework.security.core.Authentication;
 
 public interface ThreadService {
-	PostListResponse getThreadPosts(Long id);
 	void deleteThread(Long id);
-	ThreadResponse getThread();
-	CreateThreadResponse createThread(@Valid CreatedUserRequest request, Authentication auth);
+	ThreadResponse getThread(Long id);
+	CreateThreadResponse createThread(CreateThreadRequest request);
 	ThreadListResponse getAllThreads();
+	UpdateThreadResponse updateThread(UpdateThreadRequest request, Long id);
 }

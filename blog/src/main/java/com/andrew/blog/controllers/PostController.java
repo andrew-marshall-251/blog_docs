@@ -1,6 +1,7 @@
 package com.andrew.blog.controllers;
 
-import com.andrew.blog.dtos.requests.CreatedUserRequest;
+import com.andrew.blog.dtos.requests.CreatePostRequest;
+import com.andrew.blog.dtos.requests.CreateUserRequest;
 import com.andrew.blog.dtos.requests.UpdatePostRequest;
 import com.andrew.blog.dtos.responses.PostListResponse;
 import com.andrew.blog.dtos.responses.CreatePostResponse;
@@ -8,6 +9,7 @@ import com.andrew.blog.dtos.responses.PostResponse;
 import com.andrew.blog.dtos.responses.UpdatePostResponse;
 import com.andrew.blog.services.PostService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -24,47 +26,64 @@ public class PostController {
 	@GetMapping("/posts")
 	public ResponseEntity<PostListResponse> getAllPosts() {
 		PostListResponse response = postService.getAllPosts();
-		return ResponseEntity.body(response);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
 	}
 
 	@PostMapping("/posts")
 	public ResponseEntity<CreatePostResponse> createPost(
-			@Valid @RequestBody CreatedUserRequest request,
+			@Valid @RequestBody CreatePostRequest request,
 			Authentication auth) {
-		CreatePostResponse response = postService.createPost(request, auth);
-		return ResponseEntity.body(response);
+		String username = auth.getName();
+		CreatePostResponse response = postService.createPost(request, username);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
 	}
 
 	@GetMapping("/posts/{post_id}")
 	public ResponseEntity<PostResponse> getPost(@PathVariable("post_id") Long id) {
 		PostResponse response = postService.getPost(id);
-		return ResponseEntity.body(response);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
 	}
 
 	@PatchMapping("/posts/{post_id}")
-	public ResponseEntity<UpdatePostResponse> createPost(
+	public ResponseEntity<UpdatePostResponse> updatePost(
 			@Valid @RequestBody UpdatePostRequest request,
 			Authentication auth,
 			@PathVariable("post_id") Long id) {
-		UpdatePostRequest response = postService.updatePost(request, auth, id);
-		return ResponseEntity.body(response);
+		String authorName = auth.getName();
+		UpdatePostResponse response = postService.updatePost(request, authorName, id);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
 	}
 
 	@DeleteMapping("/posts/{post_id}")
-	public ResponseEntity<Void> deletePost(@PathVariable("post_id") Long id) {
-		postService.deletePost(id);
+	public ResponseEntity<Void> deletePost(
+			@PathVariable("post_id") Long id,
+			Authentication auth) {
+		String username = auth.getName();
+		postService.deletePost(username, id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/users/{user_id}/posts")
-	public ResponseEntity<PostListResponse> getUserPosts(@PathVariable("post_id") Long id) {
+	public ResponseEntity<PostListResponse> getUserPosts(@PathVariable("user_id") Long id) {
 		PostListResponse response = postService.getUserPosts(id);
-		return ResponseEntity.body(response);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
 	}
 
 	@GetMapping("/threads/{thread_id}/posts")
-	public ResponseEntity<PostListResponse> getThreadPosts(@PathVariable("post_id") Long id) {
+	public ResponseEntity<PostListResponse> getThreadPosts(@PathVariable("thread_id") Long id) {
 		PostListResponse response = postService.getThreadPosts(id);
-		return ResponseEntity.body(response);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
 	}
 }

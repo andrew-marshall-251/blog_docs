@@ -1,13 +1,16 @@
 package com.andrew.blog.controllers;
 
-import com.andrew.blog.dtos.requests.CreatedUserRequest;
-import com.andrew.blog.dtos.responses.CreatedUserResponse;
+import com.andrew.blog.dtos.requests.CreateUserRequest;
+import com.andrew.blog.dtos.responses.CreateUserResponse;
 import com.andrew.blog.dtos.responses.PostListResponse;
 import com.andrew.blog.dtos.responses.UserResponse;
 import com.andrew.blog.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,28 +20,30 @@ public class UserController {
 	public UserController(UserService userService) {
 		this.userService = userService;
 	}
+
 	@PostMapping("/")
-	public ResponseEntity<CreatedUserResponse> createUser(
-			@Valid @RequestBody CreatedUserRequest request) {
-		CreatedUserResponse response = userService.createUser(request);
-		return ResponseEntity.body(response);
+	public ResponseEntity<CreateUserResponse> createUser(
+			@Valid @RequestBody CreateUserRequest request) {
+		CreateUserResponse response = userService.createUser(request);
+		URI location = URI.create("/users/" + response.getUserId());
+		return ResponseEntity
+				.created(location)
+				.body(response);
 	}
 
 	@GetMapping("/{user_id}")
-	public ResponseEntity<UserResponse> getUser(@PathVariable("user_id") Long id) {
+	public ResponseEntity<UserResponse> getUser(
+			@PathVariable("user_id") Long id) {
 		UserResponse response = userService.getUser(id);
-		return ResponseEntity.body(response);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
 	}
 
 	@DeleteMapping("/{user_id}")
-	public ResponseEntity<Void> deleteUser(@PathVariable("user_id") Long id) {
+	public ResponseEntity<Void> deleteUser(
+			@PathVariable("user_id") Long id) {
 		userService.deleteUser(id);
 		return ResponseEntity.noContent().build();
-	}
-
-	@GetMapping("/{user_id}/posts")
-	public ResponseEntity<PostListResponse> getUserPosts(@PathVariable("user_id") Long id) {
-		PostListResponse response = userService.getUserPosts(id);
-		return ResponseEntity.body(response);
 	}
 }

@@ -6,11 +6,10 @@ import com.andrew.blog.dtos.responses.CommentListResponse;
 import com.andrew.blog.dtos.responses.CreateCommentResponse;
 import com.andrew.blog.dtos.responses.UpdateCommentResponse;
 import jakarta.validation.Valid;
-import org.springframework.security.core.Authentication;
 
 public interface CommentService {
-	void deleteComment(Long id);
-	UpdateCommentResponse updateComment(@Valid UpdateCommentRequest request, Authentication auth, Long id);
-	CreateCommentResponse createComment(@Valid CreateCommentRequest request, Authentication auth, Long id);
-	CommentListResponse getPostsComments(Long id);
+	void deleteComment(Long id, String auth);
+	UpdateCommentResponse updateComment(UpdateCommentRequest request, String username, Long id);
+	CreateCommentResponse createComment(CreateCommentRequest request, String username, Long id);
+	CommentListResponse getPostComments(Long id);
 }

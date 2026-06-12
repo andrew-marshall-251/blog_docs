@@ -4,6 +4,7 @@ import com.andrew.blog.dtos.requests.LoginRequest;
 import com.andrew.blog.dtos.responses.LoginResponse;
 import com.andrew.blog.services.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +22,9 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-		try {
-			LoginResponse response = authService.login(request);
-			return ResponseEntity.body(response);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			throw new RuntimeException();
-		}
+		LoginResponse response = authService.login(request);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
 	}
 }
