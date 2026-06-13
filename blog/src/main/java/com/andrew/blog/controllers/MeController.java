@@ -25,7 +25,9 @@ public class MeController {
 	public ResponseEntity<SelfResponse> getSelf(Authentication auth) {
 		String username = auth.getName();
 		SelfResponse response = meService.getSelf(username);
-		return null;
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
 	}
 
 	@PatchMapping("/users/me")

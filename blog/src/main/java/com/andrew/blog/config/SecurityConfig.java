@@ -9,7 +9,6 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -39,22 +38,9 @@ public class SecurityConfig {
 				.cors(Customizer.withDefaults())
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/", "/error", "/public/**").permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/threads").permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/threads/**").permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/mascots/**").permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/users/*").permitAll()
-						.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-						.requestMatchers("/api/auth/login").permitAll()
-						.requestMatchers("/api/users/**").hasRole("USER")
-						.requestMatchers("/api/posts/**").hasRole("USER")
-						.requestMatchers("/api/comments/**").hasRole("USER")
-						.requestMatchers("/api/images/**").hasRole("USER")
-						.requestMatchers("/api/admin").hasRole("ADMIN")
-						.anyRequest().authenticated()
-				)
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+						.requestMatchers("/**").permitAll()
+				);
+				// .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 

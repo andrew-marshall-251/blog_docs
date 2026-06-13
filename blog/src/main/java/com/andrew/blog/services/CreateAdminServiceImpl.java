@@ -1,9 +1,10 @@
 package com.andrew.blog.services;
 
-import com.andrew.blog.dtos.errors.*;
+import com.andrew.blog.dtos.errors.EmailAlreadyTakenException;
+import com.andrew.blog.dtos.errors.MascotNotFoundByIdException;
+import com.andrew.blog.dtos.errors.UsernameAlreadyTakenException;
 import com.andrew.blog.dtos.requests.CreateUserRequest;
 import com.andrew.blog.dtos.responses.CreateUserResponse;
-import com.andrew.blog.dtos.responses.UserResponse;
 import com.andrew.blog.entities.Mascot;
 import com.andrew.blog.entities.Role;
 import com.andrew.blog.entities.User;
@@ -18,22 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService {
-	private final UserRepository userRepository;
+public class CreateAdminServiceImpl implements CreateAdminService {
 	private final MascotRepository mascotRepository;
 	private final PasswordEncoder encoder;
+	private UserRepository userRepository;
 
-	public UserServiceImpl(
-			UserRepository userRepository,
-			MascotRepository mascotRepository,
-			PasswordEncoder encoder) {
+	public CreateAdminServiceImpl(UserRepository userRepository, MascotRepository mascotRepository, PasswordEncoder encoder) {
 		this.userRepository = userRepository;
 		this.mascotRepository = mascotRepository;
 		this.encoder = encoder;
 	}
-
 	@Override
-	public CreateUserResponse createUser(
+	public CreateUserResponse createAdmin(
 			@Valid @RequestBody CreateUserRequest request) {
 		if (userRepository.existsByUsername(request.getUsername())) {
 			throw new UsernameAlreadyTakenException(request.getUsername());
@@ -55,6 +52,7 @@ public class UserServiceImpl implements UserService {
 		newUser.setBio(request.getBio());
 		List<Role> roles = new ArrayList<>();
 		roles.add(Role.ROLE_USER);
+		roles.add(Role.ROLE_ADMIN);
 		newUser.setRoles(roles);
 		userRepository.save(newUser);
 		// create response
@@ -65,29 +63,5 @@ public class UserServiceImpl implements UserService {
 		response.setMascotId(mascot.getId());
 		response.setBio(newUser.getBio());
 		return response;
-	}
-
-	@Override
-	public UserResponse getUser(Long id) {
-		// errors
-		User user = userRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundByIdException(id));
-		// create response
-		UserResponse response = new UserResponse();
-		response.setUserId(user.getId());
-		response.setUsername(user.getUsername());
-		response.setBio(user.getBio());
-		Mascot mascot = user.getMascot();
-		response.setMascotId(mascot.getId());
-		return response;
-	}
-
-	@Override
-	public void deleteUser(Long id) {
-		// errors
-		User user = userRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundByIdException(id));
-		// delete
-		userRepository.delete(user);
 	}
 }

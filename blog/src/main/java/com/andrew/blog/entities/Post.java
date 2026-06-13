@@ -36,6 +36,7 @@ public class Post {
 	@Column(nullable = false)
 	private String slug;
 
+	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Status status;
 

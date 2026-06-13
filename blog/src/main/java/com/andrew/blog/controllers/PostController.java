@@ -25,6 +25,7 @@ public class PostController {
 
 	@GetMapping("/posts")
 	public ResponseEntity<PostListResponse> getAllPosts() {
+		System.out.println("hi");
 		PostListResponse response = postService.getAllPosts();
 		return ResponseEntity
 				.status(HttpStatus.OK)

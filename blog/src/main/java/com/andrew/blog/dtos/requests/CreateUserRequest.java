@@ -1,9 +1,6 @@
 package com.andrew.blog.dtos.requests;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Setter;
 import lombok.Getter;
 
@@ -24,7 +21,7 @@ public class CreateUserRequest {
 	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$")
 	private String password;
 
-	@NotBlank
+	@NotNull
 	private Long mascotId;
 
 	@NotBlank

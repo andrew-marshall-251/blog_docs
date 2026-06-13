@@ -9,6 +9,9 @@ import com.andrew.blog.repositories.PostRepository;
 import com.andrew.blog.repositories.ThreadRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ThreadServiceImpl implements ThreadService {
 	private final ThreadRepository threadRepository;
@@ -59,7 +62,19 @@ public class ThreadServiceImpl implements ThreadService {
 
 	@Override
 	public ThreadListResponse getAllThreads() {
-		return null;
+		List<Thread> threads = threadRepository.findAll();
+		List<ThreadResponse> threadResponses = new ArrayList<>();
+		for (Thread thread: threads) {
+			ThreadResponse threadResponse = new ThreadResponse();
+			threadResponse.setId(thread.getId());
+			threadResponse.setName(thread.getName());
+			Long postCount = postRepository.countByThreadId(thread.getId());
+			threadResponse.setPostCount(postCount);
+			threadResponses.add(threadResponse);
+		}
+		ThreadListResponse response = new ThreadListResponse();
+		response.setThreads(threadResponses);
+		return response;
 	}
 
 	@Override

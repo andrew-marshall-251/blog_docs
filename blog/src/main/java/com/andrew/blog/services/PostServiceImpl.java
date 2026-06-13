@@ -1,9 +1,6 @@
 package com.andrew.blog.services;
 
-import com.andrew.blog.dtos.errors.IsNotAuthorException;
-import com.andrew.blog.dtos.errors.PostNotFoundByIdException;
-import com.andrew.blog.dtos.errors.ThreadNotFoundByIdException;
-import com.andrew.blog.dtos.errors.UserNotFoundByUsernameException;
+import com.andrew.blog.dtos.errors.*;
 import com.andrew.blog.dtos.requests.CreatePostRequest;
 import com.andrew.blog.dtos.requests.UpdatePostRequest;
 import com.andrew.blog.dtos.responses.*;
@@ -79,6 +76,12 @@ public class PostServiceImpl implements PostService {
 		// errors
 		User author = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));
+		List<Post> authorsPosts = postRepository.findByAuthorId(author.getId());
+		for (Post post: authorsPosts) {
+			if (post.getTitle().equals(request.getTitle())) {
+				throw new PostTitleAlreadyTakenException(request.getTitle());
+			}
+		}
 		// create post
 		Post newPost = new Post();
 		newPost.setAuthor(author);

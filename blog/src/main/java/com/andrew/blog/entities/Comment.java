@@ -41,5 +41,5 @@ public class Comment {
 	private LocalDateTime lastUpdatedAt;
 
 	@Column(nullable = false)
-	private Boolean isDeleted;
+	private Boolean isDeleted = false;
 }

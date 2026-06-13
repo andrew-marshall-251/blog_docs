@@ -29,6 +29,16 @@ public class GlobalExceptionHandler {
 				.body(response);
 	}
 
+	@ExceptionHandler(PostTitleAlreadyTakenException.class)
+	public ResponseEntity<BasicErrorResponse> handlePostTitleTaken(PostTitleAlreadyTakenException e) {
+		BasicErrorResponse response = new BasicErrorResponse();
+		response.setCode("POST_TITLE_TAKEN");
+		response.setMessage(e.getMessage());
+		return ResponseEntity
+				.status(HttpStatus.CONFLICT)
+				.body(response);
+	}
+
 	@ExceptionHandler(MascotNameAlreadyTakenException.class)
 	public ResponseEntity<BasicErrorResponse> handleMascotNameTaken(MascotNameAlreadyTakenException e) {
 		BasicErrorResponse response = new BasicErrorResponse();
