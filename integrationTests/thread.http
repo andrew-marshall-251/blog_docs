@@ -1,0 +1,68 @@
+@host = http://localhost:8080
+
+@adminUsername = andrew_the_admin
+@adminEmail = andrew_the_admin@the_email.com
+@adminPassword = Andrew1234
+@adminMascotId = 1
+@adminBio = I got nothing to say
+
+### Create Admin
+POST {{host}}/api/auth/admins
+Content-Type: application/json
+
+{
+    "username": "{{adminUsername}}",
+    "email": "{{adminEmail}}",
+    "password": "{{adminPassword}}",
+    "mascotId": {{adminMascotId}},
+    "bio": "{{adminBio}}"
+}
+
+### Login Admin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "{{adminUsername}}",
+  "password": "{{adminPassword}}"
+}
+
+> {%
+    client.global.set("admin_id", response.body.id);
+    client.global.set("adminAccessToken", response.body.accessToken);
+%}
+
+### Get All Threads
+GET {{host}}/api/threads
+
+### Create Thread
+POST {{host}}/api/threads
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+
+{
+    "threadName": "Nap Time"
+}
+
+> {%
+    client.global.set("thread_id", response.body.id)
+ %}
+
+### Get Thread
+GET {{host}}/api/threads/{{thread_id}}
+
+### Update Thread
+PATCH {{host}}/api/threads/{{thread_id}}
+Content-Type: application/json
+
+{
+  "threadName": "Wake-up time"
+}
+
+### Delete Thread
+DELETE {{host}}/api/threads/{{thread_id}}
+Authorization: Bearer {{adminAccessToken}}
+
+### Delete Self (Admin)
+DELETE {{host}}/api/user/me
+Authorization: Bearer {{adminAccessToken}}

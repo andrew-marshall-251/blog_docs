@@ -60,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
 				.compact();
 		// create response
 		LoginResponse response = new LoginResponse();
+		response.setId(user.getId());
 		response.setAccessToken(accessToken);
 		response.setTokenType("Bearer");
 		response.setExpiresIn(1000L);

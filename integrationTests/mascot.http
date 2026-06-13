@@ -1,0 +1,73 @@
+@host = http://localhost:8080
+
+@username = http_test_admin1
+@password = HttpTest1234
+@email = admin1@admin.com
+
+### Create Admin for testing
+POST {{host}}/api/auth/admins
+Content-Type: application/json
+
+{
+    "username": "{{username}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "mascotId": 1,
+    "bio": "I got nothing to say"
+}
+
+### Login the Admin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "usernameOrEmail": "{{username}}",
+    "password": "{{password}}"
+}
+
+> {%
+    client.global.set("adminAccessToken", response.body.accessToken);
+%}
+
+### Create Mascot
+POST {{host}}/api/mascots
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+
+{
+    "mascotName": "Dog",
+    "mascotImgUrl": "http://localhost:8080/mascot"
+}
+
+> {%
+    client.global.set("mascot_id", response.body.mascotId);
+ %}
+
+### Get All Mascots
+GET {{host}}/api/mascots
+
+### Get Mascot Before Update
+GET {{host}}/api/mascots/{{mascot_id}}
+
+### Update Mascot 1 param
+PATCH {{host}}/api/mascots/{{mascot_id}}
+Content-Type: application/json
+
+{
+  "mascotName": "Deer"
+}
+
+### Update Mascot 1 param
+PATCH {{host}}/api/mascots/{{mascot_id}}
+Content-Type: application/json
+
+{
+  "mascotImgUrl": "http://localhost:8080/mascot_deer"
+}
+
+### Get Mascot After Update
+GET {{host}}/api/mascots/{{mascot_id}}
+
+### Delete Self (Admin)
+DELETE {{host}}/api/user/me
+Authorization: Bearer {{adminAccessToken}}
