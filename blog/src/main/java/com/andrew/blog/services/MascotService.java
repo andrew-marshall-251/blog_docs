@@ -13,4 +13,5 @@ public interface MascotService {
 	CreateMascotResponse createMascot(CreateMascotRequest request);
 	MascotResponse getMascot(Long id);
 	UpdateMascotReponse updateMascot(UpdateMascotRequest request, Long id);
+	void deleteMascot(Long id);
 }

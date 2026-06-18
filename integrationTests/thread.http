@@ -41,7 +41,7 @@ Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
 {
-    "threadName": "Nap Time"
+    "threadName": "Nice"
 }
 
 > {%

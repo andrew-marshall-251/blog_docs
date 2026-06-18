@@ -48,32 +48,22 @@ Content-Type: application/json
     client.global.set("comment_id", response.body.commentId)
  %}
 
-### Update Comment
+### Update Comment 1
 PATCH {{host}}/api/comments/{{comment_id}}
 Authorization: Bearer {{userAccessToken}}
 Content-Type: application/json
 
 {
-  "commentBody": "Literally stupid funny",
-  "parentId": 1
+  "commentBody": "Literally stupid funny"
 }
 
-### Update Comment 1 param
+### Update Comment 2
 PATCH {{host}}/api/comments/{{comment_id}}
 Authorization: Bearer {{userAccessToken}}
 Content-Type: application/json
 
 {
   "commentBody": "Literally hilarious"
-}
-
-### Update Comment 1 param
-PATCH {{host}}/api/comments/{{comment_id}}
-Authorization: Bearer {{userAccessToken}}
-Content-Type: application/json
-
-{
-  "parentId": null
 }
 
 ### Delete Comment

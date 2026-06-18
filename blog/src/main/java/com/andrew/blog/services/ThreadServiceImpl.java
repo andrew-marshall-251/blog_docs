@@ -9,8 +9,8 @@ import com.andrew.blog.repositories.PostRepository;
 import com.andrew.blog.repositories.ThreadRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ThreadServiceImpl implements ThreadService {
@@ -20,6 +20,10 @@ public class ThreadServiceImpl implements ThreadService {
 	public ThreadServiceImpl(ThreadRepository threadRepository, PostRepository postRepository) {
 		this.threadRepository = threadRepository;
 		this.postRepository = postRepository;
+	}
+
+	private Long getPostCountFromThread(Thread thread) {
+		return postRepository.countByThreadId(thread.getId());
 	}
 
 	@Override
@@ -37,11 +41,10 @@ public class ThreadServiceImpl implements ThreadService {
 		Thread thread = threadRepository.findById(id)
 				.orElseThrow(() -> new ThreadNotFoundByIdException(id));
 		// create response
-		ThreadResponse response = new ThreadResponse();
-		response.setId(thread.getId());
-		response.setName(thread.getName());
-		Long postCount = postRepository.countByThreadId(id);
-		response.setPostCount(postCount);
+		ThreadResponse response = new ThreadResponse(
+				thread.getId(),
+				thread.getName(),
+				getPostCountFromThread(thread));
 		return response;
 	}
 
@@ -52,28 +55,23 @@ public class ThreadServiceImpl implements ThreadService {
 		newThread.setName(request.getThreadName());
 		threadRepository.save(newThread);
 		// create response
-		CreateThreadResponse response = new CreateThreadResponse();
-		response.setId(newThread.getId());
-		response.setName(newThread.getName());
-		Long postCount = postRepository.countByThreadId(newThread.getId());
-		response.setPostCount(postCount);
+		CreateThreadResponse response = new CreateThreadResponse(
+				newThread.getId(),
+				newThread.getName(),
+				getPostCountFromThread(newThread));
 		return response;
 	}
 
 	@Override
 	public ThreadListResponse getAllThreads() {
 		List<Thread> threads = threadRepository.findAll();
-		List<ThreadResponse> threadResponses = new ArrayList<>();
-		for (Thread thread: threads) {
-			ThreadResponse threadResponse = new ThreadResponse();
-			threadResponse.setId(thread.getId());
-			threadResponse.setName(thread.getName());
-			Long postCount = postRepository.countByThreadId(thread.getId());
-			threadResponse.setPostCount(postCount);
-			threadResponses.add(threadResponse);
-		}
-		ThreadListResponse response = new ThreadListResponse();
-		response.setThreads(threadResponses);
+		List<ThreadResponse> threadResponses = threads.stream()
+				.map(thread-> new ThreadResponse(
+						thread.getId(),
+						thread.getName(),
+						getPostCountFromThread(thread)))
+				.collect(Collectors.toList());
+		ThreadListResponse response = new ThreadListResponse(threadResponses);
 		return response;
 	}
 
@@ -88,11 +86,10 @@ public class ThreadServiceImpl implements ThreadService {
 		}
 		threadRepository.save(thread);
 		// create response
-		UpdateThreadResponse response = new UpdateThreadResponse();
-		response.setId(thread.getId());
-		response.setName(thread.getName());
-		Long postCount = postRepository.countByThreadId(thread.getId());
-		response.setPostCount(postCount);
+		UpdateThreadResponse response = new UpdateThreadResponse(
+				thread.getId(),
+				thread.getName(),
+				getPostCountFromThread(thread));
 		return response;
 	}
 }

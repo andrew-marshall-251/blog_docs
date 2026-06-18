@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MascotServiceImpl implements MascotService {
@@ -27,17 +28,13 @@ public class MascotServiceImpl implements MascotService {
 	@Override
 	public MascotListResponse getAllMascots() {
 		List<Mascot> mascots = mascotRepository.findAll();
-		List<MascotResponse> mascotsResponses = new ArrayList<>();
-		for (Mascot mascot: mascots) {
-			MascotResponse mascotResponse = new MascotResponse();
-			mascotResponse.setMascotId(mascot.getId());
-			mascotResponse.setMascotName(mascot.getName());
-			mascotResponse.setMascotImgUrl(mascot.getImgUrl());
-			mascotsResponses.add(mascotResponse);
-		}
-		MascotListResponse response = new MascotListResponse();
-		response.setMascots(mascotsResponses);
-		return response;
+		List<MascotResponse> mascotsResponses = mascots.stream()
+				.map(mascot -> new MascotResponse(
+						mascot.getId(),
+						mascot.getName(),
+						mascot.getImgUrl()))
+				.collect(Collectors.toList());
+		return new MascotListResponse(mascotsResponses);
 	}
 
 	@Override
@@ -48,15 +45,15 @@ public class MascotServiceImpl implements MascotService {
 			throw new MascotNameAlreadyTakenException(request.getMascotName());
 		}
 		// create new mascot
-		Mascot newMascot = new Mascot();
-		newMascot.setName(request.getMascotName());
-		newMascot.setImgUrl(request.getMascotImgUrl());
+		Mascot newMascot = new Mascot(
+			request.getMascotName(),
+			request.getMascotImgUrl());
 		mascotRepository.save(newMascot);
 		// create response
-		CreateMascotResponse response = new CreateMascotResponse();
-		response.setMascotId(newMascot.getId());
-		response.setMascotName(newMascot.getName());
-		response.setMascotImgUrl(newMascot.getImgUrl());
+		CreateMascotResponse response = new CreateMascotResponse(
+				newMascot.getId(),
+				newMascot.getName(),
+				newMascot.getImgUrl());
 		return response;
 	}
 
@@ -66,10 +63,10 @@ public class MascotServiceImpl implements MascotService {
 		Mascot mascot = mascotRepository.findById(id)
 				.orElseThrow(() -> new MascotNotFoundByIdException(id));
 		// create response
-		MascotResponse response = new MascotResponse();
-		response.setMascotId(mascot.getId());
-		response.setMascotName(mascot.getName());
-		response.setMascotImgUrl(mascot.getImgUrl());
+		MascotResponse response = new MascotResponse(
+				mascot.getId(),
+				mascot.getName(),
+				mascot.getImgUrl());
 		return response;
 	}
 
@@ -77,9 +74,14 @@ public class MascotServiceImpl implements MascotService {
 	public UpdateMascotReponse updateMascot(
 			UpdateMascotRequest request,
 			Long id) {
+		System.out.println("hi");
 		// errors
 		Mascot mascot = mascotRepository.findById(id)
 				.orElseThrow(() -> new MascotNotFoundByIdException(id));
+		if (mascotRepository.existsByName(request.getMascotName()) ||
+		request.getMascotName() == "[deletedMascot]") { // reserved
+			throw new MascotNameAlreadyTakenException(request.getMascotName());
+		}
 		// update
 		if (request.getMascotName() != null) {
 			mascot.setName(request.getMascotName());
@@ -89,10 +91,19 @@ public class MascotServiceImpl implements MascotService {
 		}
 		mascotRepository.save(mascot);
 		// create response
-		UpdateMascotReponse response = new UpdateMascotReponse();
-		response.setMascotId(mascot.getId());
-		response.setMascotName(mascot.getName());
-		response.setMascotImgUrl(mascot.getImgUrl());
+		UpdateMascotReponse response = new UpdateMascotReponse(
+				mascot.getId(),
+				mascot.getName(),
+				mascot.getImgUrl());
 		return response;
+	}
+
+	@Override
+	public void deleteMascot(Long id) {
+		// errors
+		Mascot mascot = mascotRepository.findById(id)
+				.orElseThrow(() -> new MascotNotFoundByIdException(id));
+		mascot.setName("[deletedMascot]");
+		mascotRepository.save(mascot);
 	}
 }

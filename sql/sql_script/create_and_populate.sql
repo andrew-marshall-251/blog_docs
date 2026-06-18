@@ -13,7 +13,6 @@ CREATE TABLE mascots (
     name VARCHAR(255) NOT NULL,
     img_url VARCHAR(255) NOT NULL,
     PRIMARY KEY (id),
-    UNIQUE KEY uk_mascots_name (name)
 ) ENGINE=InnoDB;
 
 CREATE TABLE users (

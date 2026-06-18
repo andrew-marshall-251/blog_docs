@@ -37,20 +37,18 @@ public class AuthServiceImpl implements AuthService {
 	}
 	@Override
 	public LoginResponse login(LoginRequest request) {
-		Authentication authRequest =
-				new UsernamePasswordAuthenticationToken(
+		Authentication authRequest = new UsernamePasswordAuthenticationToken(
 						request.getUsernameOrEmail(),
 						request.getPassword());
 		authenticationManager.authenticate(authRequest);
+		// response
 		User user = userRepository.findByUsernameOrEmail(
 						request.getUsernameOrEmail(),
 						request.getUsernameOrEmail())
 				.orElseThrow(() -> new UsernameOrEmailNotFoundException(request.getUsernameOrEmail()));
 		List<Role> roles = user.getRoles();
-
 		Instant now = Instant.now();
 		Instant exp = now.plusSeconds(1000);
-
 		String accessToken = Jwts.builder()
 				.subject(user.getUsername())
 				.claim("roles", roles)
@@ -58,14 +56,14 @@ public class AuthServiceImpl implements AuthService {
 				.expiration(Date.from(exp))
 				.signWith(signingKey, Jwts.SIG.HS256)
 				.compact();
-		// create response
-		LoginResponse response = new LoginResponse();
-		response.setId(user.getId());
-		response.setAccessToken(accessToken);
-		response.setTokenType("Bearer");
-		response.setExpiresIn(1000L);
-		response.setUsername(user.getUsername());
-		response.setRoles(roles);
+
+		LoginResponse response = new LoginResponse(
+				user.getId(),
+				accessToken,
+				"Bearer",
+				1000L,
+				user.getUsername(),
+				roles);
 		return response;
 	}
 }

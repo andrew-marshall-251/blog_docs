@@ -38,4 +38,19 @@ public class User {
 	@Column(name = "role")
 	@Enumerated(EnumType.STRING)
 	private List<Role> roles;
+
+	public User(
+			String username,
+			String email,
+			Mascot mascot,
+			String bio,
+			String passwordHash,
+			List<Role> roles) {
+		this.username = username;
+		this.email = email;
+		this.mascot = mascot;
+		this.bio = bio;
+		this.passwordHash = passwordHash;
+		this.roles = roles;
+	}
 }

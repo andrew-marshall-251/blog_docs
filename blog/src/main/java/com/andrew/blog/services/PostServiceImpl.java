@@ -14,9 +14,9 @@ import com.andrew.blog.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -43,30 +43,30 @@ public class PostServiceImpl implements PostService {
 		return body.substring(0, 100) + "...";
 	}
 
+	public PostListResponse getPostListResponseFromPosts(List<Post> posts) {
+		// transform
+		List<PostExcerptResponse> postResponses = posts.stream()
+				.map(post -> new PostExcerptResponse(
+						post.getAuthor().getId(),
+						post.getAuthor().getUsername(),
+						post.getId(),
+						post.getTitle(),
+						makeExcerpt(post.getBody()),
+						post.getSlug(),
+						post.getThread().getId(),
+						post.getThread().getName(),
+						post.getCreatedAt(),
+						post.getLastUpdatedAt(),
+						post.getPublishedAt(),
+						post.getStatus()))
+				.collect(Collectors.toList());
+		return new PostListResponse(postResponses);
+	}
+
 	@Override
 	public PostListResponse getAllPosts() {
 		List<Post> posts = postRepository.findAll();
-		List<PostExcerptResponse> postResponses = new ArrayList<>();
-		for (Post post: posts) {
-			PostExcerptResponse postResponse = new PostExcerptResponse();
-			postResponse.setAuthorId(post.getAuthor().getId());
-			postResponse.setAuthorName(post.getAuthor().getUsername());
-			postResponse.setPostId(post.getId());
-			postResponse.setPostTitle(post.getTitle());
-			postResponse.setPostExcerpt(makeExcerpt(post.getBody()));
-			postResponse.setSlug(post.getSlug());
-			postResponse.setThreadId(post.getThread().getId());
-			postResponse.setThreadName(post.getThread().getName());
-			postResponse.setCreatedAt(post.getCreatedAt());
-			postResponse.setLastUpdatedAt(post.getLastUpdatedAt());
-			postResponse.setPublishedAt(post.getPublishedAt());
-			postResponse.setStatus(post.getStatus());
-			postResponses.add(postResponse);
-		}
-		// create response
-		PostListResponse response = new PostListResponse();
-		response.setPosts(postResponses);
-		return response;
+		return getPostListResponseFromPosts(posts);
 	}
 
 	@Override
@@ -76,36 +76,34 @@ public class PostServiceImpl implements PostService {
 		// errors
 		User author = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));
-		List<Post> authorsPosts = postRepository.findByAuthorId(author.getId());
-		for (Post post: authorsPosts) {
-			if (post.getTitle().equals(request.getTitle())) {
-				throw new PostTitleAlreadyTakenException(request.getTitle());
-			}
+		if (postRepository.existsByAuthorIdAndTitle(author.getId(), request.getTitle())) {
+			throw new PostTitleAlreadyTakenException(request.getTitle());
 		}
-		// create post
-		Post newPost = new Post();
-		newPost.setAuthor(author);
 		Thread thread = threadRepository.findById(request.getThreadId())
 				.orElseThrow(() -> new ThreadNotFoundByIdException(request.getThreadId()));
-		newPost.setThread(thread);
-		newPost.setTitle(request.getTitle());
-		newPost.setBody(request.getBody());
-		String slug = makeSlug(request.getTitle());
-		newPost.setSlug(slug);
-		newPost.setStatus(Status.PUBLISHED);
+		// create post
+		Post newPost = new Post(
+				author,
+				thread,
+				request.getTitle(),
+				request.getBody(),
+				makeSlug(request.getTitle()),
+				Status.PUBLISHED);
 		postRepository.save(newPost);
 		// create response
-		CreatePostResponse response = new CreatePostResponse();
-		response.setAuthorId(author.getId());
-		response.setAuthorName(author.getUsername());
-		response.setPostId(newPost.getId());
-		response.setPostBody(newPost.getBody());
-		response.setSlug(newPost.getSlug());
-		response.setThreadId(thread.getId());
-		response.setThreadName(thread.getName());
-		response.setCreatedAt(newPost.getCreatedAt());
-		response.setLastUpdatedAt(newPost.getLastUpdatedAt());
-		response.setPublishedAt(newPost.getPublishedAt());
+		CreatePostResponse response = new CreatePostResponse(
+				author.getId(),
+				author.getUsername(),
+				newPost.getId(),
+				newPost.getTitle(),
+				newPost.getBody(),
+				newPost.getSlug(),
+				thread.getId(),
+				thread.getName(),
+				newPost.getCreatedAt(),
+				newPost.getLastUpdatedAt(),
+				newPost.getPublishedAt(),
+				newPost.getStatus());
 		return response;
 	}
 
@@ -115,21 +113,21 @@ public class PostServiceImpl implements PostService {
 		Post post = postRepository.findById(id)
 				.orElseThrow(() -> new PostNotFoundByIdException(id));
 		// create response
-		PostResponse response = new PostResponse();
 		User author = post.getAuthor();
-		response.setAuthorId(author.getId());
-		response.setAuthorName(author.getUsername());
-		response.setPostId(post.getId());
-		response.setPostTitle(post.getTitle());
-		response.setPostBody(post.getBody());
-		response.setSlug(post.getSlug());
 		Thread thread = post.getThread();
-		response.setThreadId(thread.getId());
-		response.setThreadName(thread.getName());
-		response.setCreatedAt(post.getCreatedAt());
-		response.setLastUpdatedAt(post.getLastUpdatedAt());
-		response.setPublishedAt(post.getPublishedAt());
-		response.setStatus(post.getStatus());
+		PostResponse response = new PostResponse(
+				author.getId(),
+				author.getUsername(),
+				post.getId(),
+				post.getTitle(),
+				post.getBody(),
+				post.getSlug(),
+				thread.getId(),
+				thread.getName(),
+				post.getCreatedAt(),
+				post.getLastUpdatedAt(),
+				post.getPublishedAt(),
+				post.getStatus());
 		return response;
 	}
 
@@ -161,20 +159,20 @@ public class PostServiceImpl implements PostService {
 		}
 		postRepository.save(post);
 		// create response
-		UpdatePostResponse response = new UpdatePostResponse();
-		response.setAuthorId(author.getId());
-		response.setAuthorName(author.getUsername());
-		response.setPostId(post.getId());
-		response.setPostTitle(post.getTitle());
-		response.setPostBody(post.getBody());
-		response.setSlug(post.getSlug());
 		Thread thread = post.getThread();
-		response.setThreadId(thread.getId());
-		response.setThreadName(thread.getName());
-		response.setCreatedAt(post.getCreatedAt());
-		response.setLastUpdatedAt(post.getLastUpdatedAt());
-		response.setPublishedAt(post.getPublishedAt());
-		response.setStatus(post.getStatus());
+		UpdatePostResponse response = new UpdatePostResponse(
+				author.getId(),
+				author.getUsername(),
+				post.getId(),
+				post.getTitle(),
+				post.getBody(),
+				post.getSlug(),
+				thread.getId(),
+				thread.getName(),
+				post.getCreatedAt(),
+				post.getLastUpdatedAt(),
+				post.getPublishedAt(),
+				post.getStatus());
 		return response;
 	}
 
@@ -196,52 +194,12 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public PostListResponse getUserPosts(Long id) {
 		List<Post> posts = postRepository.findByAuthorId(id);
-		List<PostExcerptResponse> postResponses = new ArrayList<>();
-		for (Post post: posts) {
-			PostExcerptResponse postResponse = new PostExcerptResponse();
-			postResponse.setAuthorId(post.getAuthor().getId());
-			postResponse.setAuthorName(post.getAuthor().getUsername());
-			postResponse.setPostId(post.getId());
-			postResponse.setPostTitle(post.getTitle());
-			postResponse.setPostExcerpt(makeExcerpt(post.getBody()));
-			postResponse.setSlug(post.getSlug());
-			postResponse.setThreadId(post.getThread().getId());
-			postResponse.setThreadName(post.getThread().getName());
-			postResponse.setCreatedAt(post.getCreatedAt());
-			postResponse.setLastUpdatedAt(post.getLastUpdatedAt());
-			postResponse.setPublishedAt(post.getPublishedAt());
-			postResponse.setStatus(post.getStatus());
-			postResponses.add(postResponse);
-		}
-		// create response
-		PostListResponse response = new PostListResponse();
-		response.setPosts(postResponses);
-		return response;
+		return getPostListResponseFromPosts(posts);
 	}
 
 	@Override
 	public PostListResponse getThreadPosts(Long id) {
 		List<Post> posts = postRepository.findByThreadId(id);
-		List<PostExcerptResponse> postResponses = new ArrayList<>();
-		for (Post post: posts) {
-			PostExcerptResponse postResponse = new PostExcerptResponse();
-			postResponse.setAuthorId(post.getAuthor().getId());
-			postResponse.setAuthorName(post.getAuthor().getUsername());
-			postResponse.setPostId(post.getId());
-			postResponse.setPostTitle(post.getTitle());
-			postResponse.setPostExcerpt(makeExcerpt(post.getBody()));
-			postResponse.setSlug(post.getSlug());
-			postResponse.setThreadId(post.getThread().getId());
-			postResponse.setThreadName(post.getThread().getName());
-			postResponse.setCreatedAt(post.getCreatedAt());
-			postResponse.setLastUpdatedAt(post.getLastUpdatedAt());
-			postResponse.setPublishedAt(post.getPublishedAt());
-			postResponse.setStatus(post.getStatus());
-			postResponses.add(postResponse);
-		}
-		// create response
-		PostListResponse response = new PostListResponse();
-		response.setPosts(postResponses);
-		return response;
+		return getPostListResponseFromPosts(posts);
 	}
 }

@@ -35,7 +35,7 @@ Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
 {
-    "mascotName": "Dog",
+    "mascotName": "Jacare",
     "mascotImgUrl": "http://localhost:8080/mascot"
 }
 
@@ -51,21 +51,30 @@ GET {{host}}/api/mascots/{{mascot_id}}
 
 ### Update Mascot 1 param
 PATCH {{host}}/api/mascots/{{mascot_id}}
+Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
 {
-  "mascotName": "Deer"
+  "mascotName": "MoonStar"
 }
 
 ### Update Mascot 1 param
 PATCH {{host}}/api/mascots/{{mascot_id}}
+Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
 {
-  "mascotImgUrl": "http://localhost:8080/mascot_deer"
+  "mascotImgUrl": "http://localhost:8080/mascot_moon"
 }
 
 ### Get Mascot After Update
+GET {{host}}/api/mascots/{{mascot_id}}
+
+### Delete Mascot
+DELETE {{host}}/api/mascots/{{mascot_id}}
+Authorization: Bearer {{adminAccessToken}}
+
+### Get Mascot After Delete
 GET {{host}}/api/mascots/{{mascot_id}}
 
 ### Delete Self (Admin)

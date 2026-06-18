@@ -48,4 +48,19 @@ public class Post {
 
 	@CreationTimestamp
 	private LocalDateTime publishedAt;
+
+	public Post(
+			User author,
+			Thread thread,
+			String title,
+			String body,
+			String slug,
+			Status status) {
+		this.author = author;
+		this.thread = thread;
+		this.title = title;
+		this.body = body;
+		this.slug = slug;
+		this.status = status;
+	}
 }

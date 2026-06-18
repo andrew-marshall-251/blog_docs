@@ -11,15 +11,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Mascot {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private String name;
 
 	@Column(nullable = false)
 	private String imgUrl;
+
+	public Mascot(String name, String imgUrl) {
+		this.name = name;
+		this.imgUrl = imgUrl;
+	}
 }

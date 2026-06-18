@@ -33,37 +33,63 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public CreateUserResponse createUser(
-			@Valid @RequestBody CreateUserRequest request) {
+	public User getUserFromRequest(CreateUserRequest request, boolean isAdmin) {
 		if (userRepository.existsByUsername(request.getUsername())) {
 			throw new UsernameAlreadyTakenException(request.getUsername());
 		}
 		if (userRepository.existsByEmail(request.getEmail())) {
 			throw new EmailAlreadyTakenException(request.getEmail());
 		}
-		// create new user
-		User newUser = new User();
-		newUser.setUsername(request.getUsername());
-		newUser.setEmail(request.getEmail());
 		Mascot mascot = mascotRepository.findById(request.getMascotId())
 				.orElseThrow(() -> new MascotNotFoundByIdException(request.getMascotId()));
-		newUser.setMascot(mascot);
-		String passwordHash = encoder.encode(request.getPassword());
-		System.out.println(passwordHash);
-		System.out.println(request.getPassword());
-		newUser.setPasswordHash(passwordHash);
-		newUser.setBio(request.getBio());
+		// create new user
 		List<Role> roles = new ArrayList<>();
 		roles.add(Role.ROLE_USER);
-		newUser.setRoles(roles);
+		if (isAdmin) {
+			roles.add(Role.ROLE_ADMIN);
+		}
+		String passwordHash = encoder.encode(request.getPassword());
+
+		return new User(
+				request.getUsername(),
+				request.getEmail(),
+				mascot,
+				request.getBio(),
+				passwordHash,
+				roles);
+	}
+
+	@Override
+	public User getUserFromRequest(CreateUserRequest request) {
+		return getUserFromRequest(request, false);
+	}
+
+	@Override
+	public void addFirstAdmin() {
+		CreateUserRequest request = new CreateUserRequest(
+				"THE_ADMIN",
+				"admin@admin.com",
+				System.getenv("ADMIN_PASSWORD"),
+				1L,
+				"hard coded admin on boot");
+		if (!userRepository.existsByUsername("THE_ADMIN")) {
+			User user = getUserFromRequest(request, true);
+			userRepository.save(user);
+		}
+	}
+
+	@Override
+	public CreateUserResponse createUser(
+			@Valid @RequestBody CreateUserRequest request) {
+		User newUser = getUserFromRequest(request);
 		userRepository.save(newUser);
 		// create response
-		CreateUserResponse response = new CreateUserResponse();
-		response.setUserId(newUser.getId());
-		response.setUsername(newUser.getUsername());
-		response.setEmail(newUser.getEmail());
-		response.setMascotId(mascot.getId());
-		response.setBio(newUser.getBio());
+		CreateUserResponse response = new CreateUserResponse(
+			newUser.getId(),
+			newUser.getUsername(),
+			newUser.getEmail(),
+			newUser.getMascot().getId(),
+			newUser.getBio());
 		return response;
 	}
 
@@ -73,12 +99,11 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundByIdException(id));
 		// create response
-		UserResponse response = new UserResponse();
-		response.setUserId(user.getId());
-		response.setUsername(user.getUsername());
-		response.setBio(user.getBio());
-		Mascot mascot = user.getMascot();
-		response.setMascotId(mascot.getId());
+		UserResponse response = new UserResponse(
+				user.getId(),
+				user.getUsername(),
+				user.getMascot().getId(),
+				user.getBio());
 		return response;
 	}
 

@@ -1,7 +1,6 @@
 package com.andrew.blog.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "comments")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
 public class Comment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +41,12 @@ public class Comment {
 
 	@Column(nullable = false)
 	private Boolean isDeleted = false;
+
+	public Comment(User user, Post post, Comment parent, String body) {
+		this.user = user;
+		this.post = post;
+		this.parent = parent;
+		this.body = body;
+		this.isDeleted = false;
+	}
 }

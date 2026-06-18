@@ -58,8 +58,8 @@ public class SecurityConfig {
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowedOrigins(Arrays.asList(
-				"http://localhost:4200",
-				"http://127.0.0.1:4200",
+				"http://localhost:5173",
+				"http://127.0.0.1:5173",
 				"null"
 		));
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
@@ -91,20 +91,4 @@ public class SecurityConfig {
 						.build();
 			};
 	}
-
-//	====TEST USERS====
-//	@Bean
-//	public UserDetailsService users(PasswordEncoder encoder) {
-//		UserDetails user = User.builder()
-//				.username("user")
-//				.password(encoder.encode("1234"))
-//				.roles("USER")
-//				.build();
-//		UserDetails admin = User.builder()
-//				.username("admin")
-//				.password(encoder.encode("2345"))
-//				.roles("USER", "ADMIN")
-//				.build();
-//		return new InMemoryUserDetailsManager(user, admin);
-//	}
 }

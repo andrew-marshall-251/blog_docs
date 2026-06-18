@@ -1,11 +1,13 @@
 package com.andrew.blog.dtos.responses;
 
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter @Setter
+@AllArgsConstructor
 public class CreateCommentResponse {
 	private Long authorId;
 	private String authorName;

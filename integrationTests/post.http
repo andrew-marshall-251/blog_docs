@@ -38,22 +38,23 @@ Content-Type: application/json
 
 > {%
     client.global.set("user_id", response.body.id);
-    client.global.set("userAccessToken", response.body.accessToken);
+    client.global.set("accessToken", response.body.accessToken);
 %}
 
 ### Create Post
 POST {{host}}/api/posts
-Authorization: Bearer {{userAccessToken}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "title": "How to test with Http files",
+    "title": "Dinosaurs",
     "body": "You gotta use intelliJ and just type and hope for the best tbh",
     "threadId": {{thread_id}}
 }
 
 > {%
-    client.global.set("post_id", response.body.postId)
+    client.global.set("post_id", response.body.postId);
+    console.log(response.body.postId)
  %}
 
 ### Update Post 1 param
@@ -82,7 +83,7 @@ Content-Type: application/json
 GET {{host}}/api/posts/{{post_id}}
 
 ### Delete Post
-POST {{host}}/api/posts/{{post_id}}
+DELETE {{host}}/api/posts/{{post_id}}
 Authorization: Bearer {{accessToken}}
 
 ### Get Thread Posts

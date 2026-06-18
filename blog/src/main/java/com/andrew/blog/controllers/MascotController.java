@@ -65,10 +65,21 @@ public class MascotController {
 			@Valid @RequestBody UpdateMascotRequest request,
 			Authentication auth,
 			@PathVariable("mascot_id") Long id) {
+		System.out.println("before_auth");
 		adminVerification(auth);
+		System.out.println("after_auth");
 		UpdateMascotReponse response = mascotService.updateMascot(request, id);
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(response);
+	}
+
+	@DeleteMapping("/mascots/{mascot_id}")
+	public ResponseEntity<CreateMascotResponse> createMascot(
+			@PathVariable("mascot_id") Long id,
+			Authentication auth) {
+		adminVerification(auth);
+		mascotService.deleteMascot(id);
+		return ResponseEntity.noContent().build();
 	}
 }

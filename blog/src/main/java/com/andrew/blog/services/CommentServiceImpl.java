@@ -15,8 +15,8 @@ import com.andrew.blog.repositories.PostRepository;
 import com.andrew.blog.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -33,36 +33,25 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	public CommentListResponse getPostComments(Long id) {
-		if (!postRepository.existsById(id)) {
-			throw new PostNotFoundByIdException(id);
-		}
+		// resources
+		Post post = postRepository.findById(id)
+				.orElseThrow(() -> new PostNotFoundByIdException(id));
 		List<Comment> comments = commentRepository.findByPostId(id);
-		List<CommentResponse> commentResponses = new ArrayList<>();
-		for (Comment comment: comments) {
-			CommentResponse el = new CommentResponse();
-			User author = userRepository.findById(comment.getId())
-					.orElseThrow(() -> new UserNotFoundByIdException(id));
-			el.setAuthorId(author.getId());
-			el.setAuthorName(author.getUsername());
-			Long postId = comment.getPost().getId();
-			Post post = postRepository.findById(postId)
-					.orElseThrow(() -> new PostNotFoundByIdException(postId));
-			el.setPostId(post.getId());
-			el.setPostTitle(post.getTitle());
-			el.setCommentId(comment.getId());
-			el.setCommentBody(comment.getBody());
-			if (comment.getParent() != null) {
-				el.setParentCommentId(comment.getParent().getId());
-			} else {
-				el.setParentCommentId(null);
-			}
-			el.setCreatedAt(comment.getCreatedAt());
-			el.setLastUpdatedAt(comment.getLastUpdatedAt());
-			commentResponses.add(el);
-		}
-		CommentListResponse response = new CommentListResponse();
-		response.setComments(commentResponses);
-		return response;
+		// response
+		List<CommentResponse> commentResponses = comments.stream()
+				.map(comment -> new CommentResponse(
+							comment.getUser().getId(),
+							comment.getUser().getUsername(),
+							id,
+							post.getTitle(),
+							comment.getId(),
+							comment.getBody(),
+							comment.getParent() == null ?
+								null : comment.getParent().getId(),
+							comment.getCreatedAt(),
+							comment.getLastUpdatedAt()))
+				.collect(Collectors.toList());
+		return new CommentListResponse(commentResponses);
 	}
 
 	@Override
@@ -70,36 +59,39 @@ public class CommentServiceImpl implements CommentService {
 			CreateCommentRequest request,
 			String username,
 			Long id) {
-		// errors
+		// resources
 		User author = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));
-		// create new comment
-		Comment newComment = new Comment();
-		newComment.setUser(author);
 		Post post = postRepository.findById(id)
 				.orElseThrow(() -> new PostNotFoundByIdException(id));
-		newComment.setPost(post);
-		if (request.getParentId() != null) {
-			Comment parent = commentRepository.findById(request.getParentId())
-					.orElseThrow(() -> new CommentNotFoundByIdException(id));
-			newComment.setParent(parent);
+		Comment parent;
+		Long parentId;
+		if (request.getParentId() == null) {
+			parent = null;
+			parentId = null;
 		} else {
-			newComment.setParent(null);
+			parent = commentRepository.findById(request.getParentId())
+					.orElseThrow(() -> new CommentNotFoundByIdException(id));
+			parentId = parent.getId();
 		}
-		newComment.setBody(request.getCommentBody());
-		newComment.setIsDeleted(false);
+		// create
+		Comment newComment = new Comment(
+				author,
+				post,
+				parent,
+				request.getCommentBody());
 		commentRepository.save(newComment);
-		// create response
-		CreateCommentResponse response = new CreateCommentResponse();
-		response.setAuthorId(author.getId());
-		response.setAuthorName(author.getUsername());
-		response.setPostId(post.getId());
-		response.setPostTitle(post.getTitle());
-		response.setCommentId(newComment.getId());
-		response.setCommentBody(newComment.getBody());
-		response.setParentCommentId(request.getParentId());
-		response.setCreatedAt(newComment.getCreatedAt());
-		response.setLastUpdatedAt(newComment.getLastUpdatedAt());
+		// response
+		CreateCommentResponse response = new CreateCommentResponse(
+				author.getId(),
+				author.getUsername(),
+				post.getId(),
+				post.getTitle(),
+				newComment.getId(),
+				newComment.getBody(),
+				parentId,
+				newComment.getCreatedAt(),
+				newComment.getLastUpdatedAt());
 		return response;
 	}
 
@@ -108,11 +100,14 @@ public class CommentServiceImpl implements CommentService {
 			UpdateCommentRequest request,
 			String username,
 			Long id) {
-		// errors
+		// resources
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new CommentNotFoundByIdException(id));
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));
+		Long postId = comment.getPost().getId();
+		Post post = postRepository.findById(postId)
+				.orElseThrow(() -> new PostNotFoundByIdException(postId));
 		if (user.getId() != comment.getUser().getId()) {
 			throw new IsNotAuthorException(username);
 		}
@@ -121,20 +116,17 @@ public class CommentServiceImpl implements CommentService {
 			comment.setBody(request.getCommentBody());
 		}
 		commentRepository.save(comment);
-		// create response
-		UpdateCommentResponse response = new UpdateCommentResponse();
-		response.setAuthorId(user.getId());
-		response.setAuthorName(user.getUsername());
-		Long postId = comment.getPost().getId();
-		Post post = postRepository.findById(postId)
-				.orElseThrow(() -> new PostNotFoundByIdException(postId));
-		response.setPostId(post.getId());
-		response.setPostTitle(post.getTitle());
-		response.setCommentId(comment.getId());
-		response.setCommentBody(comment.getBody());
-		response.setParentCommentId(comment.getParent().getId());
-		response.setCreatedAt(comment.getCreatedAt());
-		response.setLastUpdatedAt(comment.getLastUpdatedAt());
+		// response
+		UpdateCommentResponse response = new UpdateCommentResponse(
+				user.getId(),
+				user.getUsername(),
+				post.getId(),
+				post.getTitle(),
+				comment.getId(),
+				comment.getBody(),
+				comment.getParent().getId(),
+				comment.getCreatedAt(),
+				comment.getLastUpdatedAt());
 		return response;
 	}
 

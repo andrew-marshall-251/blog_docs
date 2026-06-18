@@ -30,32 +30,34 @@ public class MeServiceImpl implements MeService {
 	private final AuthenticationManager authenticationManager;
 	private final PasswordEncoder encoder;
 	private final PostRepository postRepository;
+	private final PostService postService;
 
-	public MeServiceImpl(UserRepository userRepository, MascotRepository mascotRepository, AuthenticationManager authenticationManager, PasswordEncoder encoder, PostRepository postRepository) {
+	public MeServiceImpl(
+			UserRepository userRepository,
+			MascotRepository mascotRepository,
+			AuthenticationManager authenticationManager,
+			PasswordEncoder encoder,
+			PostRepository postRepository,
+			PostService postService) {
 		this.userRepository = userRepository;
 		this.mascotRepository = mascotRepository;
 		this.authenticationManager = authenticationManager;
 		this.encoder = encoder;
 		this.postRepository = postRepository;
-	}
-
-	private String makeExcerpt(String body) {
-		if (body.length() <= 100) {
-			return body;
-		}
-		return body.substring(0, 100) + "...";
+		this.postService = postService;
 	}
 
 	@Override
 	public SelfResponse getSelf(String username) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));
-		SelfResponse response = new SelfResponse();
-		response.setUserId(user.getId());
-		response.setUsername(user.getUsername());
-		response.setEmail(user.getEmail());
-		response.setMascotId(user.getMascot().getId());
-		response.setBio(user.getBio());
+		// create response
+		SelfResponse response = new SelfResponse(
+				user.getId(),
+				user.getUsername(),
+				user.getEmail(),
+				user.getMascot().getId(),
+				user.getBio());
 		return response;
 	}
 
@@ -83,12 +85,12 @@ public class MeServiceImpl implements MeService {
 		}
 		userRepository.save(user);
 		// create response
-		UpdateSelfResponse response = new UpdateSelfResponse();
-		response.setUserId(user.getId());
-		response.setUsername(user.getUsername());
-		response.setEmail(user.getEmail());
-		response.setMascotId(user.getMascot().getId());
-		response.setBio(user.getBio());
+		UpdateSelfResponse response = new UpdateSelfResponse(
+				user.getId(),
+				user.getUsername(),
+				user.getEmail(),
+				user.getMascot().getId(),
+				user.getBio());
 		return response;
 	}
 
@@ -118,38 +120,18 @@ public class MeServiceImpl implements MeService {
 		user.setPasswordHash(passwordHash);
 		userRepository.save(user);
 		// create response
-		UpdateSelfResponse response = new UpdateSelfResponse();
-		response.setUserId(user.getId());
-		response.setUsername(user.getUsername());
-		response.setEmail(user.getEmail());
-		response.setMascotId(user.getMascot().getId());
-		response.setBio(user.getBio());
+		UpdateSelfResponse response = new UpdateSelfResponse(
+				user.getId(),
+				user.getUsername(),
+				user.getEmail(),
+				user.getMascot().getId(),
+				user.getBio());
 		return response;
 	}
 
 	@Override
 	public PostListResponse getSelfPosts(String username) {
 		List<Post> posts = postRepository.findByAuthorUsername(username);
-		List<PostExcerptResponse> postResponses = new ArrayList<>();
-		for (Post post: posts) {
-			PostExcerptResponse postResponse = new PostExcerptResponse();
-			postResponse.setAuthorId(post.getAuthor().getId());
-			postResponse.setAuthorName(post.getAuthor().getUsername());
-			postResponse.setPostId(post.getId());
-			postResponse.setPostTitle(post.getTitle());
-			postResponse.setPostExcerpt(makeExcerpt(post.getBody()));
-			postResponse.setSlug(post.getSlug());
-			postResponse.setThreadId(post.getThread().getId());
-			postResponse.setThreadName(post.getThread().getName());
-			postResponse.setCreatedAt(post.getCreatedAt());
-			postResponse.setLastUpdatedAt(post.getLastUpdatedAt());
-			postResponse.setPublishedAt(post.getPublishedAt());
-			postResponse.setStatus(post.getStatus());
-			postResponses.add(postResponse);
-		}
-		// create response
-		PostListResponse response = new PostListResponse();
-		response.setPosts(postResponses);
-		return response;
+		return postService.getPostListResponseFromPosts(posts);
 	}
 }
