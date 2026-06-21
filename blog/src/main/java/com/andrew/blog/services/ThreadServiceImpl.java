@@ -1,5 +1,6 @@
 package com.andrew.blog.services;
 
+import com.andrew.blog.dtos.errors.ThreadNameAlreadyTakenException;
 import com.andrew.blog.dtos.errors.ThreadNotFoundByIdException;
 import com.andrew.blog.dtos.requests.CreateThreadRequest;
 import com.andrew.blog.dtos.requests.UpdateThreadRequest;
@@ -32,7 +33,8 @@ public class ThreadServiceImpl implements ThreadService {
 		Thread thread = threadRepository.findById(id)
 				.orElseThrow(() -> new ThreadNotFoundByIdException(id));
 		// delete
-		threadRepository.delete(thread);
+		thread.setName("[deletedThread]");
+		threadRepository.save(thread);
 	}
 
 	@Override
@@ -40,6 +42,9 @@ public class ThreadServiceImpl implements ThreadService {
 		// errors
 		Thread thread = threadRepository.findById(id)
 				.orElseThrow(() -> new ThreadNotFoundByIdException(id));
+		if (thread.getName().equals("[deletedThread]")) {
+			throw new ThreadNotFoundByIdException(id);
+		}
 		// create response
 		ThreadResponse response = new ThreadResponse(
 				thread.getId(),
@@ -51,6 +56,10 @@ public class ThreadServiceImpl implements ThreadService {
 	@Override
 	public CreateThreadResponse createThread(CreateThreadRequest request) {
 		// create new thread
+		if (threadRepository.existsByName(request.getThreadName())
+			&& !request.getThreadName().equals("[deletedThread]")) {
+			throw new ThreadNameAlreadyTakenException(request.getThreadName());
+		}
 		Thread newThread = new Thread();
 		newThread.setName(request.getThreadName());
 		threadRepository.save(newThread);
@@ -65,6 +74,9 @@ public class ThreadServiceImpl implements ThreadService {
 	@Override
 	public ThreadListResponse getAllThreads() {
 		List<Thread> threads = threadRepository.findAll();
+		threads = threads.stream()
+				.filter(thread -> !thread.getName().equals("[deletedThread]"))
+				.collect(Collectors.toList());
 		List<ThreadResponse> threadResponses = threads.stream()
 				.map(thread-> new ThreadResponse(
 						thread.getId(),

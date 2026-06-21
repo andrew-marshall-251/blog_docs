@@ -12,7 +12,7 @@ CREATE TABLE mascots (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     img_url VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id),
+    PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE users (
@@ -23,8 +23,8 @@ CREATE TABLE users (
     bio LONGTEXT NULL,
     password_hash VARCHAR(255) NOT NULL,
     PRIMARY KEY (id),
-    UNIQUE KEY uk_users_username (username),
-    UNIQUE KEY uk_users_email (email),
+    KEY idx_users_username (username),
+    KEY idx_users_email (email),
     KEY idx_users_mascot_id (mascot_id),
     CONSTRAINT fk_users_mascots
         FOREIGN KEY (mascot_id) REFERENCES mascots (id)
@@ -39,11 +39,24 @@ CREATE TABLE user_roles (
         ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE refresh_tokens (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    refresh_token_hash VARCHAR(255) NOT NULL,
+    expires DATETIME(6) NOT NULL,
+    PRIMARY KEY (id),
+    KEY idx_refresh_tokens_user_id (user_id),
+    UNIQUE KEY uk_refresh_tokens_refresh_token_hash (refresh_token_hash),
+    CONSTRAINT fk_refresh_tokens_users
+        FOREIGN KEY (user_id) REFERENCES users (id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 CREATE TABLE threads (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     PRIMARY KEY (id),
-    UNIQUE KEY uk_threads_name (name)
+    KEY idx_threads_name (name)
 ) ENGINE=InnoDB;
 
 CREATE TABLE posts (
@@ -204,6 +217,7 @@ INSERT INTO comments (
 
 ALTER TABLE mascots AUTO_INCREMENT = 4;
 ALTER TABLE users AUTO_INCREMENT = 4;
+ALTER TABLE refresh_tokens AUTO_INCREMENT = 1;
 ALTER TABLE threads AUTO_INCREMENT = 4;
 ALTER TABLE posts AUTO_INCREMENT = 4;
 ALTER TABLE comments AUTO_INCREMENT = 4;

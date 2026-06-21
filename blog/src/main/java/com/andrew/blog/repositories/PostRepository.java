@@ -11,5 +11,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	List<Post> findByThreadId(Long threadId);
 	boolean existsByAuthorIdAndTitle(Long authorId, String title);
 	Long countByThreadId(Long id);
-
 }

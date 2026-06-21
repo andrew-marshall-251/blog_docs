@@ -6,4 +6,5 @@ import lombok.Getter;
 @Getter @Setter
 public class UpdateCommentRequest {
 	private String commentBody;
+	private Long parentId;
 }

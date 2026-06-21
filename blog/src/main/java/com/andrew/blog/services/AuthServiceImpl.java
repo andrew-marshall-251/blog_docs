@@ -1,5 +1,6 @@
 package com.andrew.blog.services;
 
+import com.andrew.blog.dtos.errors.RefreshDoesNotExistException;
 import com.andrew.blog.dtos.errors.UserNotFoundByUsernameException;
 import com.andrew.blog.dtos.errors.UsernameOrEmailNotFoundException;
 import com.andrew.blog.dtos.requests.LoginRequest;
@@ -116,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public RefreshResponse refresh(RefreshRequest request) {
 		RefreshToken refreshToken = refreshTokenRepository.findByRefreshTokenHash(sha256(request.getRefreshToken()))
-				.orElseThrow(() -> new RuntimeException("Refresh Token does not exist"));
+				.orElseThrow(() -> new RefreshDoesNotExistException("Refresh Token does not exist"));
 		User user = refreshToken.getUser();
 		String accessToken = generateJwt(user, user.getRoles(), expJwt);
 		return new RefreshResponse(

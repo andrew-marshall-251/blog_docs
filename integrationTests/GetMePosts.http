@@ -1,0 +1,81 @@
+@host = http://localhost:8080
+
+@username = tester
+@password = HttpTest1234
+@email = tester@admin.com
+@thread_id = 1
+@out_of_range = 1000
+
+### Create User for testing
+POST {{host}}/api/auth/admins
+Content-Type: application/json
+
+{
+    "username": "{{username}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "mascotId": 1,
+    "bio": "I got nothing to say"
+}
+
+### Login the User
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "usernameOrEmail": "{{username}}",
+    "password": "{{password}}"
+}
+
+> {%
+    client.global.set("userAccessToken", response.body.accessToken.token);
+    client.global.set("user_id", response.body.id);
+%}
+
+### Get Me
+GET {{host}}/api/users/me
+Authorization: Bearer {{userAccessToken}}
+
+### Create Post 1
+POST {{host}}/api/posts
+Authorization: Bearer {{userAccessToken}}
+Content-Type: application/json
+
+{
+  "title": "Traveling Malaysia",
+  "body": "We went to the indian temple",
+  "threadId": 1
+}
+
+### Create Post 2
+POST {{host}}/api/posts
+Authorization: Bearer {{userAccessToken}}
+Content-Type: application/json
+
+{
+  "title": "Traveling Africa",
+  "body": "We went to the african temple",
+  "threadId": 1
+}
+
+### Create Post 3
+POST {{host}}/api/posts
+Authorization: Bearer {{userAccessToken}}
+Content-Type: application/json
+
+{
+  "title": "Traveling Japan",
+  "body": "We went to the japanese temple",
+  "threadId": 1
+}
+
+### Get My Posts
+GET {{host}}/api/users/me/posts
+Authorization: Bearer {{userAccessToken}}
+
+### Delete Self
+DELETE {{host}}/api/users/me
+Authorization: Bearer {{userAccessToken}}
+
+### Get My Posts after delete
+GET {{host}}/api/users/{{user_id}}/posts

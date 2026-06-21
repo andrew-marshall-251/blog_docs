@@ -1,6 +1,7 @@
 package com.andrew.blog.services;
 
 import com.andrew.blog.dtos.errors.MascotNotFoundByIdException;
+import com.andrew.blog.dtos.errors.UserNotFoundByIdException;
 import com.andrew.blog.dtos.errors.UserNotFoundByUsernameException;
 import com.andrew.blog.dtos.requests.UpdateSelfPasswordRequest;
 import com.andrew.blog.dtos.requests.UpdateSelfRequest;
@@ -13,12 +14,14 @@ import com.andrew.blog.entities.Post;
 import com.andrew.blog.entities.User;
 import com.andrew.blog.repositories.MascotRepository;
 import com.andrew.blog.repositories.PostRepository;
+import com.andrew.blog.repositories.RefreshTokenRepository;
 import com.andrew.blog.repositories.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,7 @@ public class MeServiceImpl implements MeService {
 	private final PasswordEncoder encoder;
 	private final PostRepository postRepository;
 	private final PostService postService;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	public MeServiceImpl(
 			UserRepository userRepository,
@@ -38,13 +42,15 @@ public class MeServiceImpl implements MeService {
 			AuthenticationManager authenticationManager,
 			PasswordEncoder encoder,
 			PostRepository postRepository,
-			PostService postService) {
+			PostService postService,
+			RefreshTokenRepository refreshTokenRepository) {
 		this.userRepository = userRepository;
 		this.mascotRepository = mascotRepository;
 		this.authenticationManager = authenticationManager;
 		this.encoder = encoder;
 		this.postRepository = postRepository;
 		this.postService = postService;
+		this.refreshTokenRepository = refreshTokenRepository;
 	}
 
 	@Override
@@ -95,12 +101,16 @@ public class MeServiceImpl implements MeService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteSelf(String username) {
 		// errors
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));
-		// delete
-		userRepository.delete(user);
+		refreshTokenRepository.deleteByUserId(user.getId());
+		// soft delete to keep the comments
+		user.setUsername("[deletedUser]");
+		user.setEmail("deleted@user.com");
+		userRepository.save(user);
 	}
 
 	@Override

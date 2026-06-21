@@ -1,0 +1,9 @@
+@host = http://localhost:8080
+@user_id = 1
+@out_of_range = 1000
+
+### Get User
+GET {{host}}/api/users/{{user_id}}/posts
+
+### Get User out of range error (expect 404)
+GET {{host}}/api/users/{{out_of_range}}/posts

@@ -7,11 +7,11 @@ import com.andrew.blog.dtos.responses.UserResponse;
 import com.andrew.blog.entities.Mascot;
 import com.andrew.blog.entities.Role;
 import com.andrew.blog.entities.User;
-import com.andrew.blog.repositories.MascotRepository;
-import com.andrew.blog.repositories.UserRepository;
+import com.andrew.blog.repositories.*;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
@@ -21,23 +21,32 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final MascotRepository mascotRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
 	private final PasswordEncoder encoder;
+	private final PostRepository postRepository;
+	private final CommentRepository commentRepository;
 
 	public UserServiceImpl(
 			UserRepository userRepository,
 			MascotRepository mascotRepository,
-			PasswordEncoder encoder) {
+			RefreshTokenRepository refreshTokenRepository,
+			PasswordEncoder encoder, PostRepository postRepository, CommentRepository commentRepository) {
 		this.userRepository = userRepository;
 		this.mascotRepository = mascotRepository;
+		this.refreshTokenRepository = refreshTokenRepository;
 		this.encoder = encoder;
+		this.postRepository = postRepository;
+		this.commentRepository = commentRepository;
 	}
 
 	@Override
 	public User getUserFromRequest(CreateUserRequest request, boolean isAdmin) {
-		if (userRepository.existsByUsername(request.getUsername())) {
+		if (userRepository.existsByUsername(request.getUsername())
+			&& !request.getUsername().equals("[deletedUser]")) {
 			throw new UsernameAlreadyTakenException(request.getUsername());
 		}
-		if (userRepository.existsByEmail(request.getEmail())) {
+		if (userRepository.existsByEmail(request.getEmail())
+			&& !request.getEmail().equals("deleted@user.com")) {
 			throw new EmailAlreadyTakenException(request.getEmail());
 		}
 		Mascot mascot = mascotRepository.findById(request.getMascotId())
@@ -98,6 +107,9 @@ public class UserServiceImpl implements UserService {
 		// errors
 		User user = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundByIdException(id));
+		if (user.getUsername().equals("[deletedUser]")) {
+				throw new UserNotFoundByIdException(id);
+		}
 		// create response
 		UserResponse response = new UserResponse(
 				user.getId(),
@@ -108,11 +120,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteUser(Long id) {
 		// errors
 		User user = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundByIdException(id));
-		// delete
-		userRepository.delete(user);
+		refreshTokenRepository.deleteByUserId(user.getId());
+		// soft delete to keep the comments
+		user.setUsername("[deletedUser]");
+		user.setEmail("deleted@user.com");
+		userRepository.save(user);
 	}
 }

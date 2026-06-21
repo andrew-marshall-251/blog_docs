@@ -44,6 +44,10 @@ public class PostServiceImpl implements PostService {
 	}
 
 	public PostListResponse getPostListResponseFromPosts(List<Post> posts) {
+		// take out drafts
+		posts = posts.stream()
+				.filter(post -> post.getStatus().equals(Status.PUBLISHED))
+				.collect(Collectors.toList());
 		// transform
 		List<PostExcerptResponse> postResponses = posts.stream()
 				.map(post -> new PostExcerptResponse(
@@ -193,12 +197,16 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public PostListResponse getUserPosts(Long id) {
+		userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundByIdException(id));
 		List<Post> posts = postRepository.findByAuthorId(id);
 		return getPostListResponseFromPosts(posts);
 	}
 
 	@Override
 	public PostListResponse getThreadPosts(Long id) {
+		threadRepository.findById(id)
+				.orElseThrow(() -> new ThreadNotFoundByIdException(id));
 		List<Post> posts = postRepository.findByThreadId(id);
 		return getPostListResponseFromPosts(posts);
 	}

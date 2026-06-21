@@ -1,0 +1,9 @@
+@host = http://localhost:8080
+@comment_id = 1
+@out_of_range = 1000
+
+### Get Comment
+GET {{host}}/api/comments/{{comment_id}}
+
+### Get Comment Out of Range (expected 404)
+GET {{host}}/api/comments/{{out_of_range}}

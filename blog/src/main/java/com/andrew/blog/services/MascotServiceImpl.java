@@ -28,6 +28,9 @@ public class MascotServiceImpl implements MascotService {
 	@Override
 	public MascotListResponse getAllMascots() {
 		List<Mascot> mascots = mascotRepository.findAll();
+		mascots = mascots.stream()
+				.filter(mascot -> !mascot.getName().equals("[deletedMascot]"))
+				.collect(Collectors.toList());
 		List<MascotResponse> mascotsResponses = mascots.stream()
 				.map(mascot -> new MascotResponse(
 						mascot.getId(),
@@ -62,6 +65,9 @@ public class MascotServiceImpl implements MascotService {
 		// errors
 		Mascot mascot = mascotRepository.findById(id)
 				.orElseThrow(() -> new MascotNotFoundByIdException(id));
+		if (mascot.getName().equals("[deletedMascot]")) { // hide the soft deletes
+			throw new MascotNotFoundByIdException(id);
+		}
 		// create response
 		MascotResponse response = new MascotResponse(
 				mascot.getId(),

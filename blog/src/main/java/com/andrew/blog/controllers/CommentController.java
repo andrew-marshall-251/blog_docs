@@ -3,6 +3,7 @@ package com.andrew.blog.controllers;
 import com.andrew.blog.dtos.requests.CreateCommentRequest;
 import com.andrew.blog.dtos.requests.UpdateCommentRequest;
 import com.andrew.blog.dtos.responses.CommentListResponse;
+import com.andrew.blog.dtos.responses.CommentResponse;
 import com.andrew.blog.dtos.responses.CreateCommentResponse;
 import com.andrew.blog.dtos.responses.UpdateCommentResponse;
 import com.andrew.blog.services.CommentService;
@@ -25,6 +26,15 @@ public class CommentController {
 	public ResponseEntity<CommentListResponse> getPostComments(
 			@PathVariable("post_id") Long id) {
 		CommentListResponse response = commentService.getPostComments(id);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
+	}
+
+	@GetMapping("/comments/{comment_id}")
+	public ResponseEntity<CommentResponse> getComment(
+			@PathVariable("comment_id") Long id) {
+		CommentResponse response = commentService.getComment(id);
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(response);

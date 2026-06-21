@@ -19,6 +19,16 @@ public class GlobalExceptionHandler {
 				.body(response);
 	}
 
+	@ExceptionHandler(ThreadNameAlreadyTakenException.class)
+	public ResponseEntity<BasicErrorResponse> handleThreadNameTaken(ThreadNameAlreadyTakenException e) {
+		BasicErrorResponse response = new BasicErrorResponse();
+		response.setCode("THREAD_NAME_TAKEN");
+		response.setMessage(e.getMessage());
+		return ResponseEntity
+				.status(HttpStatus.CONFLICT)
+				.body(response);
+	}
+
 	@ExceptionHandler(EmailAlreadyTakenException.class)
 	public ResponseEntity<BasicErrorResponse> handleEmailTaken(EmailAlreadyTakenException e) {
 		BasicErrorResponse response = new BasicErrorResponse();
@@ -116,6 +126,16 @@ public class GlobalExceptionHandler {
 		response.setMessage(e.getMessage());
 		return ResponseEntity
 				.status(HttpStatus.NOT_FOUND)
+				.body(response);
+	}
+
+	@ExceptionHandler(RefreshDoesNotExistException.class)
+	public ResponseEntity<BasicErrorResponse> handleRefreshDoesNotExist(RefreshDoesNotExistException e) {
+		BasicErrorResponse response = new BasicErrorResponse();
+		response.setCode("REFRESH_INVALID");
+		response.setMessage(e.getMessage());
+		return ResponseEntity
+				.status(HttpStatus.FORBIDDEN)
 				.body(response);
 	}
 

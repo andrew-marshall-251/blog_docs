@@ -1,0 +1,9 @@
+@host = http://localhost:8080
+@post_id = 1
+@out_of_range = 1000
+
+### Get Post Comments
+GET {{host}}/api/posts/{{post_id}}/comments
+
+### Get Post Comments out of range error (expect 404)
+GET {{host}}/api/posts/{{out_of_range}}/comments

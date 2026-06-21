@@ -55,6 +55,24 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
+	public CommentResponse getComment(Long id) {
+		Comment comment = commentRepository.findById(id)
+				.orElseThrow(() -> new CommentNotFoundByIdException(id));
+		CommentResponse response = new CommentResponse(
+				comment.getUser().getId(),
+				comment.getUser().getUsername(),
+				comment.getPost().getId(),
+				comment.getPost().getTitle(),
+				comment.getId(),
+				comment.getBody(),
+				comment.getParent() == null ?
+						null : comment.getParent().getId(),
+				comment.getCreatedAt(),
+				comment.getLastUpdatedAt());
+		return response;
+	}
+
+	@Override
 	public CreateCommentResponse createComment(
 			CreateCommentRequest request,
 			String username,
@@ -115,8 +133,17 @@ public class CommentServiceImpl implements CommentService {
 		if (request.getCommentBody() != null) {
 			comment.setBody(request.getCommentBody());
 		}
+		if (request.getParentId() != null) {
+			Comment parent = commentRepository.findById(request.getParentId())
+							.orElseThrow(() -> new CommentNotFoundByIdException(request.getParentId()));
+			comment.setParent(parent);
+		}
 		commentRepository.save(comment);
 		// response
+		Long parentId = null;
+		if (comment.getParent() != null) {
+			parentId = comment.getParent().getId();
+		}
 		UpdateCommentResponse response = new UpdateCommentResponse(
 				user.getId(),
 				user.getUsername(),
@@ -124,7 +151,7 @@ public class CommentServiceImpl implements CommentService {
 				post.getTitle(),
 				comment.getId(),
 				comment.getBody(),
-				comment.getParent().getId(),
+				parentId,
 				comment.getCreatedAt(),
 				comment.getLastUpdatedAt());
 		return response;
