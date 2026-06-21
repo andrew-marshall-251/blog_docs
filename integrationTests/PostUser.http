@@ -1,0 +1,34 @@
+@host = http://localhost:8080
+
+@username = Turkey
+@password = Turkey1234
+@email = turkey@user.com
+
+### Create User
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+    "username": "{{username}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "mascotId": 1,
+    "bio": "I got nothing to say"
+}
+
+### Login User
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "{{username}}",
+  "password": "{{password}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken.token);
+ %}
+
+### Delete User
+DELETE {{host}}/api/users/me
+Authorization: Bearer {{accessToken}}

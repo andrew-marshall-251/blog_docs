@@ -1,0 +1,70 @@
+@host = http://localhost:8080
+
+@username = ThePigMonster
+@password = ThePigMonster1234
+@email = pig_monster@user.com
+
+@newUsername = ThePigMonster3026
+@newEmail = pig_monster_new@user.com
+
+### Create Admin
+POST {{host}}/api/auth/admins
+Content-Type: application/json
+
+{
+    "username": "{{username}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "mascotId": 1,
+    "bio": "I got nothing to say"
+}
+
+### Login Admin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "{{username}}",
+  "password": "{{password}}"
+}
+
+> {%
+    client.global.set("adminAccessToken", response.body.accessToken.token);
+%}
+
+### Update Admin 1
+PATCH {{host}}/api/users/me
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+
+{
+    "email": "{{newEmail}}",
+    "mascotId": 2
+}
+
+### Update Admin 2
+PATCH {{host}}/api/users/me
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+
+{
+    "username": "{{newUsername}}",
+    "bio": "I really got nothing to say"
+}
+
+### Login Admin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "{{newUsername}}",
+  "password": "{{password}}"
+}
+
+> {%
+    client.global.set("adminAccessToken", response.body.accessToken.token);
+%}
+
+### Delete Admin
+DELETE {{host}}/api/users/me
+Authorization: Bearer {{adminAccessToken}}

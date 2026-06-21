@@ -1,0 +1,66 @@
+@host = http://localhost:8080
+
+@username = Turkey
+@password = Turkey1234
+@email = turkey@user.com
+
+### Create User
+POST {{host}}/api/auth/admins
+Content-Type: application/json
+
+{
+    "username": "{{username}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "mascotId": 1,
+    "bio": "I got nothing to say"
+}
+
+### Login User
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "usernameOrEmail": "{{username}}",
+    "password": "{{password}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken.token);
+%}
+
+### Create Thread
+POST {{host}}/api/threads
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "threadName": "Not_Oranges"
+}
+
+> {%
+    client.global.set("thread_id", response.body.id);
+%}
+
+### Get Thread
+GET {{host}}/api/threads/{{thread_id}}
+
+### Update Thread
+PATCH {{host}}/api/threads/{{thread_id}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "threadName": "Definitely_Not_Oranges"
+}
+
+### Get Thread after Update
+GET {{host}}/api/threads/{{thread_id}}
+
+### Delete Thread
+DELETE {{host}}/api/threads/1
+Authorization: Bearer {{accessToken}}
+
+### Delete User
+DELETE {{host}}/api/users/me
+Authorization: Bearer {{accessToken}}

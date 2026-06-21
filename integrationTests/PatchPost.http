@@ -1,0 +1,75 @@
+@host = http://localhost:8080
+
+@username = Turkey
+@password = Turkey1234
+@email = turkey@user.com
+
+### Create User
+POST {{host}}/api/auth/admins
+Content-Type: application/json
+
+{
+    "username": "{{username}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "mascotId": 1,
+    "bio": "I got nothing to say"
+}
+
+### Login User
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "usernameOrEmail": "{{username}}",
+    "password": "{{password}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken.token);
+%}
+
+### Create Post
+POST {{host}}/api/posts
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Traveling to the Malaysian Temple",
+  "body": "We went to the malaysian temple today",
+  "threadId": 1
+}
+
+> {%
+    client.global.set("post_id", response.body.postId);
+%}
+
+### Get Post
+GET {{host}}/api/posts/{{post_id}}
+
+### Update Post 1
+PATCH {{host}}/api/posts/{{post_id}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "threadId": 3
+}
+
+### Update Post 2
+PATCH {{host}}/api/posts/{{post_id}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Let's Go to Space",
+  "body": "We went to the space temple"
+}
+
+### Delete Post
+DELETE {{host}}/api/posts/{{post_id}}
+Authorization: Bearer {{accessToken}}
+
+### Delete User
+DELETE {{host}}/api/users/me
+Authorization: Bearer {{accessToken}}

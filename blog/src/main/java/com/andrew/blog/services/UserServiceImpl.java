@@ -42,11 +42,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUserFromRequest(CreateUserRequest request, boolean isAdmin) {
 		if (userRepository.existsByUsername(request.getUsername())
-			&& !request.getUsername().equals("[deletedUser]")) {
+			|| request.getUsername().equals("[deletedUser]")) {
 			throw new UsernameAlreadyTakenException(request.getUsername());
 		}
 		if (userRepository.existsByEmail(request.getEmail())
-			&& !request.getEmail().equals("deleted@user.com")) {
+			|| request.getEmail().equals("deleted@user.com")) {
 			throw new EmailAlreadyTakenException(request.getEmail());
 		}
 		Mascot mascot = mascotRepository.findById(request.getMascotId())

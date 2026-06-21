@@ -57,7 +57,7 @@ public class ThreadServiceImpl implements ThreadService {
 	public CreateThreadResponse createThread(CreateThreadRequest request) {
 		// create new thread
 		if (threadRepository.existsByName(request.getThreadName())
-			&& !request.getThreadName().equals("[deletedThread]")) {
+			|| request.getThreadName().equals("[deletedThread]")) {
 			throw new ThreadNameAlreadyTakenException(request.getThreadName());
 		}
 		Thread newThread = new Thread();

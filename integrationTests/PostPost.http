@@ -1,0 +1,53 @@
+@host = http://localhost:8080
+
+@username = Turkey
+@password = Turkey1234
+@email = turkey@user.com
+
+### Create User
+POST {{host}}/api/auth/admins
+Content-Type: application/json
+
+{
+    "username": "{{username}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "mascotId": 1,
+    "bio": "I got nothing to say"
+}
+
+### Login User
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "usernameOrEmail": "{{username}}",
+    "password": "{{password}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken.token);
+%}
+
+### Create Post
+POST {{host}}/api/posts
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Traveling Malaysia",
+  "body": "We went to the indian temple",
+  "threadId": 1
+}
+
+> {%
+    client.global.set("post_id", response.body.postId);
+%}
+
+### Delete Post
+DELETE {{host}}/api/posts/{{post_id}}
+Authorization: Bearer {{accessToken}}
+
+### Delete User
+DELETE {{host}}/api/users/me
+Authorization: Bearer {{accessToken}}

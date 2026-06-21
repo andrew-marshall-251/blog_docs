@@ -57,9 +57,31 @@ Content-Type: application/json
   "parentId": 1
 }
 
+### Update Comment
+PATCH {{host}}/api/comments/{{comment_id}}
+Authorization: Bearer {{userAccessToken}}
+Content-Type: application/json
+
+{
+  "parentId": 2
+}
+
+### Update Comment
+PATCH {{host}}/api/comments/{{comment_id}}
+Authorization: Bearer {{userAccessToken}}
+Content-Type: application/json
+
+{
+  "commentBody": "What a great great great great post!!"
+}
+
 ### Get Comment After Update
 GET {{host}}/api/comments/{{comment_id}}
 
 ### Delete Comment
 DELETE {{host}}/api/comments/{{comment_id}}
+Authorization: Bearer {{userAccessToken}}
+
+### Delete User
+DELETE {{host}}/api/users/me
 Authorization: Bearer {{userAccessToken}}

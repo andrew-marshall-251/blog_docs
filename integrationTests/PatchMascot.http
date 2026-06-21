@@ -1,0 +1,79 @@
+@host = http://localhost:8080
+
+@username = Buffalo
+@password = Buffalo1234
+@email = buffalo@admin.com
+
+### Create Admin for testing
+POST {{host}}/api/auth/admins
+Content-Type: application/json
+
+{
+    "username": "{{username}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "mascotId": 1,
+    "bio": "I got nothing to say"
+}
+
+### Login the Admin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "usernameOrEmail": "{{username}}",
+    "password": "{{password}}"
+}
+
+> {%
+    client.global.set("adminAccessToken", response.body.accessToken.token);
+%}
+
+### Create Mascot
+POST {{host}}/api/mascots
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+
+{
+  "mascotName": "Bird",
+  "mascotImgUrl": "https://birdphoto.com/bird"
+}
+
+> {%
+    client.global.set("mascot_id", response.body.mascotId);
+%}
+
+### Update Mascot
+PATCH {{host}}/api/mascots/{{mascot_id}}
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+
+{
+  "mascotName": "Fish",
+  "mascotImgUrl": "https://birdphoto.com/fish"
+}
+
+### Update Mascot
+PATCH {{host}}/api/mascots/{{mascot_id}}
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+
+{
+  "mascotName": "Zebra"
+}
+
+### Update Mascot
+PATCH {{host}}/api/mascots/{{mascot_id}}
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+
+{
+  "mascotImgUrl": "https://birdphoto.com/zebra"
+}
+### Delete Mascot
+DELETE {{host}}/api/mascots/{{mascot_id}}
+Authorization: Bearer {{adminAccessToken}}
+
+### Delete Admin
+DELETE {{host}}/api/users/me
+Authorization: Bearer {{adminAccessToken}}

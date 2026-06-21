@@ -1,0 +1,38 @@
+@host = http://localhost:8080
+
+@username = Turkey
+@password = Turkey1234
+@email = turkey@user.com
+
+@usernameUser = TheDog2005
+@passwordUser = TheDogMan1234
+@emailUser = the_dog@man.com
+
+### Create Admin
+POST {{host}}/api/auth/admins
+Content-Type: application/json
+
+{
+    "username": "{{username}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "mascotId": 1,
+    "bio": "I got nothing to say"
+}
+
+### Login Admin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "{{username}}",
+  "password": "{{password}}"
+}
+
+> {%
+    client.global.set("adminAccessToken", response.body.accessToken.token);
+%}
+
+### Delete Admin
+DELETE {{host}}/api/users/me
+Authorization: Bearer {{accessToken}}
