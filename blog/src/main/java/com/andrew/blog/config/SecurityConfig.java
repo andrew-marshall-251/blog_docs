@@ -62,7 +62,7 @@ public class SecurityConfig {
 				"http://127.0.0.1:5173",
 				"null"
 		));
-		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
 		config.setAllowedHeaders(Arrays.asList("*"));
 		config.setAllowCredentials(true);
 

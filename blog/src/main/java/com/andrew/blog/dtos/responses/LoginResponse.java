@@ -11,9 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 public class LoginResponse {
 	private Long id;
-	private String accessToken;
-	private String tokenType;
-	private Long expiresIn;
+	private TokenResponse accessToken;
+	private TokenResponse refreshToken;
 	private String username;
 	private List<Role> roles;
 }

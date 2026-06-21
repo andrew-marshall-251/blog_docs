@@ -1,15 +1,15 @@
 package com.andrew.blog.controllers;
 
 import com.andrew.blog.dtos.requests.LoginRequest;
+import com.andrew.blog.dtos.requests.RefreshRequest;
 import com.andrew.blog.dtos.responses.LoginResponse;
+import com.andrew.blog.dtos.responses.RefreshResponse;
 import com.andrew.blog.services.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,5 +26,20 @@ public class AuthController {
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(response);
+	}
+
+	@PostMapping("/refresh")
+	public ResponseEntity<RefreshResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+		RefreshResponse response = authService.refresh(request);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(response);
+	}
+
+	@DeleteMapping("/refresh")
+	public ResponseEntity<Void> revokeRefresh(Authentication auth) {
+		String username = auth.getName();
+		authService.revokeRefresh(username);
+		return ResponseEntity.noContent().build();
 	}
 }
