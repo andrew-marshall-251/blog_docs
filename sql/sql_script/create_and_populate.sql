@@ -12,6 +12,8 @@ CREATE TABLE mascots (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     img_url VARCHAR(255) NOT NULL,
+    created_at DATETIME(6) NOT NULL,
+    last_updated_at DATETIME(6) NOT NULL,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
@@ -22,6 +24,8 @@ CREATE TABLE users (
     mascot_id BIGINT NULL,
     bio LONGTEXT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    created_at DATETIME(6) NOT NULL,
+    last_updated_at DATETIME(6) NOT NULL,
     PRIMARY KEY (id),
     KEY idx_users_username (username),
     KEY idx_users_email (email),
@@ -44,6 +48,8 @@ CREATE TABLE refresh_tokens (
     user_id BIGINT NOT NULL,
     refresh_token_hash VARCHAR(255) NOT NULL,
     expires DATETIME(6) NOT NULL,
+    created_at DATETIME(6) NOT NULL,
+    last_updated_at DATETIME(6) NOT NULL,
     PRIMARY KEY (id),
     KEY idx_refresh_tokens_user_id (user_id),
     UNIQUE KEY uk_refresh_tokens_refresh_token_hash (refresh_token_hash),
@@ -55,6 +61,8 @@ CREATE TABLE refresh_tokens (
 CREATE TABLE threads (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
+    created_at DATETIME(6) NOT NULL,
+    last_updated_at DATETIME(6) NOT NULL,
     PRIMARY KEY (id),
     KEY idx_threads_name (name)
 ) ENGINE=InnoDB;
@@ -67,8 +75,8 @@ CREATE TABLE posts (
     body LONGTEXT NULL,
     slug VARCHAR(255) NOT NULL,
     status ENUM('DRAFT', 'PUBLISHED', 'ARCHIVED') NOT NULL,
-    created_at DATETIME(6) NULL,
-    last_updated_at DATETIME(6) NULL,
+    created_at DATETIME(6) NOT NULL,
+    last_updated_at DATETIME(6) NOT NULL,
     published_at DATETIME(6) NULL,
     PRIMARY KEY (id),
     KEY idx_posts_user_id (user_id),
@@ -86,8 +94,8 @@ CREATE TABLE comments (
     post_id BIGINT NULL,
     parent_id BIGINT NULL,
     body VARCHAR(255) NOT NULL,
-    created_at DATETIME(6) NULL,
-    last_updated_at DATETIME(6) NULL,
+    created_at DATETIME(6) NOT NULL,
+    last_updated_at DATETIME(6) NOT NULL,
     is_deleted BIT(1) NOT NULL DEFAULT b'0',
     PRIMARY KEY (id),
     KEY idx_comments_user_id (user_id),
@@ -103,16 +111,16 @@ CREATE TABLE comments (
         ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
-INSERT INTO mascots (id, name, img_url) VALUES
-    (1, 'Byte', 'https://example.com/mascots/byte.png'),
-    (2, 'Pixel', 'https://example.com/mascots/pixel.png'),
-    (3, 'Orbit', 'https://example.com/mascots/orbit.png');
+INSERT INTO mascots (id, name, img_url, created_at, last_updated_at) VALUES
+    (1, 'Byte', 'https://example.com/mascots/byte.png', '2026-06-12 08:00:00.000000', '2026-06-12 08:00:00.000000'),
+    (2, 'Pixel', 'https://example.com/mascots/pixel.png', '2026-06-12 08:00:00.000000', '2026-06-12 08:00:00.000000'),
+    (3, 'Orbit', 'https://example.com/mascots/orbit.png', '2026-06-12 08:00:00.000000', '2026-06-12 08:00:00.000000');
 
 -- Password for all seeded users is: password
-INSERT INTO users (id, username, email, mascot_id, bio, password_hash) VALUES
-    (1, 'admin', 'admin@example.com', 1, 'Admin account for managing the blog.', '$2a$10$7EqJtq98hPqEX7fNZaFWoOHiYx6tv2HKGE/oS0QlmRpxR7KvZkEVS'),
-    (2, 'andrew', 'andrew@example.com', 2, 'Writes about backend APIs and project notes.', '$2a$10$7EqJtq98hPqEX7fNZaFWoOHiYx6tv2HKGE/oS0QlmRpxR7KvZkEVS'),
-    (3, 'reader', 'reader@example.com', 3, 'Follows posts and leaves comments.', '$2a$10$7EqJtq98hPqEX7fNZaFWoOHiYx6tv2HKGE/oS0QlmRpxR7KvZkEVS');
+INSERT INTO users (id, username, email, mascot_id, bio, password_hash, created_at, last_updated_at) VALUES
+    (1, 'admin', 'admin@example.com', 1, 'Admin account for managing the blog.', '$2a$10$7EqJtq98hPqEX7fNZaFWoOHiYx6tv2HKGE/oS0QlmRpxR7KvZkEVS', '2026-06-12 08:05:00.000000', '2026-06-12 08:05:00.000000'),
+    (2, 'andrew', 'andrew@example.com', 2, 'Writes about backend APIs and project notes.', '$2a$10$7EqJtq98hPqEX7fNZaFWoOHiYx6tv2HKGE/oS0QlmRpxR7KvZkEVS', '2026-06-12 08:10:00.000000', '2026-06-12 08:10:00.000000'),
+    (3, 'reader', 'reader@example.com', 3, 'Follows posts and leaves comments.', '$2a$10$7EqJtq98hPqEX7fNZaFWoOHiYx6tv2HKGE/oS0QlmRpxR7KvZkEVS', '2026-06-12 08:15:00.000000', '2026-06-12 08:15:00.000000');
 
 INSERT INTO user_roles (user_id, role) VALUES
     (1, 'ROLE_USER'),
@@ -120,10 +128,10 @@ INSERT INTO user_roles (user_id, role) VALUES
     (2, 'ROLE_USER'),
     (3, 'ROLE_USER');
 
-INSERT INTO threads (id, name) VALUES
-    (1, 'Announcements'),
-    (2, 'Backend'),
-    (3, 'General');
+INSERT INTO threads (id, name, created_at, last_updated_at) VALUES
+    (1, 'Announcements', '2026-06-12 08:30:00.000000', '2026-06-12 08:30:00.000000'),
+    (2, 'Backend', '2026-06-12 08:30:00.000000', '2026-06-12 08:30:00.000000'),
+    (3, 'General', '2026-06-12 08:30:00.000000', '2026-06-12 08:30:00.000000');
 
 INSERT INTO posts (
     id,

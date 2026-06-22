@@ -10,7 +10,7 @@ import lombok.Setter;
 @Table(name = "threads")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class Thread {
+public class Thread extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

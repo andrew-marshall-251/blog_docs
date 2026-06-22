@@ -9,6 +9,7 @@ import com.andrew.blog.dtos.responses.UpdateThreadResponse;
 import com.andrew.blog.services.ThreadService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class ThreadController {
 	}
 
 	@PostMapping("/threads")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<CreateThreadResponse> createThread(
 			@Valid @RequestBody CreateThreadRequest request) {
 		CreateThreadResponse response = threadService.createThread(request);
@@ -45,6 +47,7 @@ public class ThreadController {
 	}
 
 	@PatchMapping("/threads/{thread_id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<UpdateThreadResponse> updateThread(
 			@Valid @RequestBody UpdateThreadRequest request,
 			@PathVariable("thread_id") Long id) {
@@ -53,6 +56,7 @@ public class ThreadController {
 	}
 
 	@DeleteMapping("/threads/{thread_id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Void> deleteThread(
 			@PathVariable("thread_id") Long id,
 			Authentication auth) {

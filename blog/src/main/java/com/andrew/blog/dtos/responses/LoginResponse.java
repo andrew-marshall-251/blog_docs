@@ -2,12 +2,11 @@ package com.andrew.blog.dtos.responses;
 
 import com.andrew.blog.entities.Role;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter @Setter
+@Data
 @AllArgsConstructor
 public class LoginResponse {
 	private Long id;

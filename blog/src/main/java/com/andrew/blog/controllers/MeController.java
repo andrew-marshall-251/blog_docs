@@ -8,6 +8,7 @@ import com.andrew.blog.dtos.responses.UpdateSelfResponse;
 import com.andrew.blog.services.MeService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class MeController {
 	}
 
 	@GetMapping("/users/me")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<SelfResponse> getSelf(Authentication auth) {
 		String username = auth.getName();
 		SelfResponse response = meService.getSelf(username);
@@ -28,6 +30,7 @@ public class MeController {
 	}
 
 	@PatchMapping("/users/me")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<UpdateSelfResponse> updateSelf(
 			@Valid @RequestBody UpdateSelfRequest request,
 			Authentication auth) {
@@ -37,6 +40,7 @@ public class MeController {
 	}
 
 	@DeleteMapping("/users/me")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<Void> deleteSelf(Authentication auth) {
 		String username = auth.getName();
 		meService.deleteSelf(username);
@@ -44,6 +48,7 @@ public class MeController {
 	}
 
 	@PatchMapping("/users/me/password")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<UpdateSelfResponse> updateSelfPassword(
 			@Valid @RequestBody UpdateSelfPasswordRequest request,
 			Authentication auth) {
@@ -53,6 +58,7 @@ public class MeController {
 	}
 
 	@GetMapping("/users/me/posts")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<PostListResponse> getSelfPosts(Authentication auth) {
 		String username = auth.getName();
 		PostListResponse response = meService.getSelfPosts(username);

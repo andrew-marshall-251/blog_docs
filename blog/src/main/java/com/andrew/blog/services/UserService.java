@@ -12,6 +12,6 @@ public interface UserService {
 	User getUserFromRequest(CreateUserRequest request, boolean isAdmin);
 	User getUserFromRequest(CreateUserRequest request);
 	void addFirstAdmin();
-	boolean validUsername(String username);
-	boolean validEmail(String email);
+	void validateUsername(String username);
+	void validateEmail(String email);
 }

@@ -3,7 +3,6 @@ package com.andrew.blog.controllers;
 import com.andrew.blog.dtos.requests.CreateUserRequest;
 import com.andrew.blog.dtos.responses.CreateUserResponse;
 import com.andrew.blog.services.CreateAdminService;
-import com.andrew.blog.services.CreateAdminServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +21,9 @@ public class CreateAdminController {
 		this.createAdminService = createAdminService;
 	}
 	@PostMapping("/auth/admins")
+	//REMEMBER TO ENABLE BEFORE DEPLOYMENT
+	//REMEMBER TO ENABLE BEFORE DEPLOYMENT
+	//@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<CreateUserResponse> createAdmin(
 			@Valid @RequestBody CreateUserRequest request) {
 		CreateUserResponse response = createAdminService.createAdmin(request);

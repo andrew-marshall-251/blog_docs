@@ -9,6 +9,7 @@ import com.andrew.blog.dtos.responses.UpdateMascotReponse;
 import com.andrew.blog.services.MascotService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class MascotController {
 	}
 
 	@PostMapping("/mascots")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<CreateMascotResponse> createMascot(
 			@Valid @RequestBody CreateMascotRequest request,
 			Authentication auth) {
@@ -46,6 +48,7 @@ public class MascotController {
 	}
 
 	@PatchMapping("/mascots/{mascot_id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<UpdateMascotReponse> updateMascot(
 			@Valid @RequestBody UpdateMascotRequest request,
 			Authentication auth,
@@ -55,7 +58,8 @@ public class MascotController {
 	}
 
 	@DeleteMapping("/mascots/{mascot_id}")
-	public ResponseEntity<CreateMascotResponse> createMascot(
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Void> deleteMascot(
 			@PathVariable("mascot_id") Long id,
 			Authentication auth) {
 		mascotService.deleteMascot(id);

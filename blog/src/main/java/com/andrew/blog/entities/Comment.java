@@ -4,16 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
 @Getter @Setter
 @NoArgsConstructor
-public class Comment {
+public class Comment extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -32,12 +28,6 @@ public class Comment {
 
 	@Column(nullable = false)
 	private String body;
-
-	@CreationTimestamp
-	private LocalDateTime createdAt;
-
-	@UpdateTimestamp
-	private LocalDateTime lastUpdatedAt;
 
 	@Column(nullable = false)
 	private Boolean isDeleted = false;

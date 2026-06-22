@@ -7,6 +7,7 @@ import com.andrew.blog.dtos.responses.RefreshResponse;
 import com.andrew.blog.services.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,7 @@ public class AuthController {
 	}
 
 	@DeleteMapping("/auth/refresh")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<Void> revokeRefresh(Authentication auth) {
 		String username = auth.getName();
 		authService.revokeRefresh(username);

@@ -9,6 +9,7 @@ import com.andrew.blog.dtos.responses.UpdatePostResponse;
 import com.andrew.blog.services.PostService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class PostController {
 	}
 
 	@PostMapping("/posts")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<CreatePostResponse> createPost(
 			@Valid @RequestBody CreatePostRequest request,
 			Authentication auth) {
@@ -46,6 +48,7 @@ public class PostController {
 	}
 
 	@PatchMapping("/posts/{post_id}")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<UpdatePostResponse> updatePost(
 			@Valid @RequestBody UpdatePostRequest request,
 			Authentication auth,
@@ -56,6 +59,7 @@ public class PostController {
 	}
 
 	@DeleteMapping("/posts/{post_id}")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<Void> deletePost(
 			@PathVariable("post_id") Long id,
 			Authentication auth) {

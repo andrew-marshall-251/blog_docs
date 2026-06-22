@@ -2,12 +2,11 @@ package com.andrew.blog.dtos.responses;
 
 import com.andrew.blog.entities.Status;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Data
 @AllArgsConstructor
 public class CreatePostResponse {
 	private Long authorId;

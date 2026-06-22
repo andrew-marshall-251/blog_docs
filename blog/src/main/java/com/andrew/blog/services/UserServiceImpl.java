@@ -42,34 +42,28 @@ public class UserServiceImpl implements UserService {
 		this.commentRepository = commentRepository;
 	}
 
-	public boolean validUsername(String username) {
+	public void validateUsername(String username) {
 		if (userRepository.existsByUsername(username)) {
-			return false;
+			throw new UsernameAlreadyTakenException(username);
 		}
 		if (username.equals("[deletedUser]")) {
-			return false;
+			throw new UsernameAlreadyTakenException(username);
 		}
-		return true;
 	}
 
-	public boolean validEmail(String email) {
+	public void validateEmail(String email) {
 		if (userRepository.existsByEmail(email)) {
-			return false;
+			throw new EmailAlreadyTakenException(email);
 		}
 		if (email.equals("deleted@user.com")) {
-			return false;
+			throw new EmailAlreadyTakenException(email);
 		}
-		return true;
 	}
 
 	@Override
 	public User getUserFromRequest(CreateUserRequest request, boolean isAdmin) {
-		if (!validUsername(request.getUsername())) {
-			throw new UsernameAlreadyTakenException(request.getUsername());
-		}
-		if (!validEmail(request.getEmail())) {
-			throw new EmailAlreadyTakenException(request.getEmail());
-		}
+		validateUsername(request.getUsername());
+		validateEmail(request.getEmail());
 		Mascot mascot = mascotRepository.findById(request.getMascotId())
 				.orElseThrow(() -> new MascotNotFoundByIdException(request.getMascotId()));
 		// create new user

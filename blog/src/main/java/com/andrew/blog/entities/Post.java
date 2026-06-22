@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "posts")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class Post {
+public class Post extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -39,12 +38,6 @@ public class Post {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Status status;
-
-	@CreationTimestamp
-	private LocalDateTime createdAt;
-
-	@UpdateTimestamp
-	private LocalDateTime lastUpdatedAt;
 
 	@CreationTimestamp
 	private LocalDateTime publishedAt;

@@ -6,6 +6,7 @@ import com.andrew.blog.dtos.responses.UserResponse;
 import com.andrew.blog.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -35,6 +36,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/users/{user_id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Void> deleteUser(
 			@PathVariable("user_id") Long id) {
 		userService.deleteUser(id);

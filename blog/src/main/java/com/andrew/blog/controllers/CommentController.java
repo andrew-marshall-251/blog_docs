@@ -9,6 +9,7 @@ import com.andrew.blog.dtos.responses.UpdateCommentResponse;
 import com.andrew.blog.services.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class CommentController {
 	}
 
 	@PostMapping("/posts/{post_id}/comments")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<CreateCommentResponse> createComment(
 			@Valid @RequestBody CreateCommentRequest request,
 			Authentication auth,
@@ -49,6 +51,7 @@ public class CommentController {
 	}
 
 	@PatchMapping("/comments/{comment_id}")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<UpdateCommentResponse> updateComment(
 			@Valid @RequestBody UpdateCommentRequest request,
 			Authentication auth,
@@ -59,6 +62,7 @@ public class CommentController {
 	}
 
 	@DeleteMapping("/comments/{comment_id}")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<Void> deleteComment(
 			@PathVariable("comment_id") Long id,
 			Authentication auth) {

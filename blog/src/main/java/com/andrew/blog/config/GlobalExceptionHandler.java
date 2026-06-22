@@ -105,6 +105,14 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
+	@ExceptionHandler(RefreshTokenExpiredException.class)
+	public ResponseEntity<BasicErrorResponse> handleRefreshTokenExpired(RefreshTokenExpiredException e) {
+		BasicErrorResponse response = new BasicErrorResponse();
+		response.setCode("REFRESH_EXPIRED");
+		response.setMessage(e.getMessage());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	}
+
 	@ExceptionHandler(RefreshDoesNotExistException.class)
 	public ResponseEntity<BasicErrorResponse> handleRefreshDoesNotExist(RefreshDoesNotExistException e) {
 		BasicErrorResponse response = new BasicErrorResponse();

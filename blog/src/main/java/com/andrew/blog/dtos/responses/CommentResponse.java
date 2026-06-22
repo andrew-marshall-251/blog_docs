@@ -1,12 +1,11 @@
 package com.andrew.blog.dtos.responses;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Data
 @AllArgsConstructor
 public class CommentResponse {
 	private Long authorId;

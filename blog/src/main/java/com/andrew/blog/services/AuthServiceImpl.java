@@ -1,6 +1,7 @@
 package com.andrew.blog.services;
 
 import com.andrew.blog.dtos.errors.RefreshDoesNotExistException;
+import com.andrew.blog.dtos.errors.RefreshTokenExpiredException;
 import com.andrew.blog.dtos.errors.UserNotFoundByUsernameException;
 import com.andrew.blog.dtos.errors.UsernameOrEmailNotFoundException;
 import com.andrew.blog.dtos.requests.LoginRequest;
@@ -32,8 +33,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-	private final Long expJwt = 900L; // 15 minutes
-	private final Long expRefresh = 2592000L; // one month
+	private final Long expJwt = Long.valueOf(System.getenv("JWT_EXP"));
+	private final Long expRefresh = Long.valueOf(System.getenv("REFRESH_EXP"));
 
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final UserRepository userRepository;
@@ -118,6 +119,11 @@ public class AuthServiceImpl implements AuthService {
 	public RefreshResponse refresh(RefreshRequest request) {
 		RefreshToken refreshToken = refreshTokenRepository.findByRefreshTokenHash(sha256(request.getRefreshToken()))
 				.orElseThrow(() -> new RefreshDoesNotExistException("Refresh Token does not exist"));
+		// check expiry
+		Instant now = Instant.now();
+		if (now.isAfter(refreshToken.getExpires())) {
+			throw new RefreshTokenExpiredException();
+		}
 		User user = refreshToken.getUser();
 		String accessToken = generateJwt(user, user.getRoles(), expJwt);
 		return new RefreshResponse(

@@ -1,9 +1,7 @@
 package com.andrew.blog.services;
 
-import com.andrew.blog.dtos.errors.EmailAlreadyTakenException;
 import com.andrew.blog.dtos.errors.MascotNotFoundByIdException;
 import com.andrew.blog.dtos.errors.UserNotFoundByUsernameException;
-import com.andrew.blog.dtos.errors.UsernameAlreadyTakenException;
 import com.andrew.blog.dtos.requests.UpdateSelfPasswordRequest;
 import com.andrew.blog.dtos.requests.UpdateSelfRequest;
 import com.andrew.blog.dtos.responses.PostListResponse;
@@ -74,20 +72,15 @@ public class MeServiceImpl implements MeService {
 	public UpdateSelfResponse updateSelf(
 			UpdateSelfRequest request,
 			String username) {
-		// errors
+		// update + errors
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));
-		// update
 		if (request.getUsername() != null) {
-			if (!userService.validUsername(request.getUsername())) {
-				throw new UsernameAlreadyTakenException(request.getUsername());
-			}
+			userService.validateUsername(request.getUsername());
 			user.setUsername(request.getUsername());
 		}
 		if (request.getEmail() != null) {
-			if (!userService.validEmail(request.getEmail())) {
-				throw new EmailAlreadyTakenException(request.getEmail());
-			}
+			userService.validateEmail(request.getEmail());
 			user.setEmail(request.getEmail());
 		}
 		if (request.getMascotId() != null) {

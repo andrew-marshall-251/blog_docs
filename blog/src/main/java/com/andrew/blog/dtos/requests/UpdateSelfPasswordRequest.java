@@ -1,9 +1,8 @@
 package com.andrew.blog.dtos.requests;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter @Setter
+@Data
 public class UpdateSelfPasswordRequest {
 	private String oldPassword;
 	private String newPassword;
