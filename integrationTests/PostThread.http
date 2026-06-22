@@ -5,7 +5,7 @@
 @email = turkey@user.com
 
 ### Create User
-POST {{host}}/api/auth/admins
+POST {{host}}/api/v1/auth/admins
 Content-Type: application/json
 
 {
@@ -17,7 +17,7 @@ Content-Type: application/json
 }
 
 ### Login User
-POST {{host}}/api/auth/login
+POST {{host}}/api/v1/auth/login
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 %}
 
 ### Create Thread
-POST {{host}}/api/threads
+POST {{host}}/api/v1/threads
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -43,7 +43,7 @@ Content-Type: application/json
 %}
 
 ### Delete Thread
-DELETE {{host}}/api/threads/{{thread_id}}
+DELETE {{host}}/api/v1/threads/{{thread_id}}
 Authorization: Bearer {{accessToken}}
 
 ### Delete User

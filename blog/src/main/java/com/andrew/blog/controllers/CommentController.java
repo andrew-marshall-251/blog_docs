@@ -8,13 +8,14 @@ import com.andrew.blog.dtos.responses.CreateCommentResponse;
 import com.andrew.blog.dtos.responses.UpdateCommentResponse;
 import com.andrew.blog.services.CommentService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class CommentController {
 	private final CommentService commentService;
 
@@ -26,18 +27,14 @@ public class CommentController {
 	public ResponseEntity<CommentListResponse> getPostComments(
 			@PathVariable("post_id") Long id) {
 		CommentListResponse response = commentService.getPostComments(id);
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/comments/{comment_id}")
 	public ResponseEntity<CommentResponse> getComment(
 			@PathVariable("comment_id") Long id) {
 		CommentResponse response = commentService.getComment(id);
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/posts/{post_id}/comments")
@@ -47,9 +44,8 @@ public class CommentController {
 			@PathVariable("post_id") Long id) {
 		String username = auth.getName();
 		CreateCommentResponse response = commentService.createComment(request, username, id);
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(response);
+		URI location = URI.create("/api/v1/comments/" + response.getCommentId());
+		return ResponseEntity.created(location).body(response);
 	}
 
 	@PatchMapping("/comments/{comment_id}")
@@ -59,9 +55,7 @@ public class CommentController {
 			@PathVariable("comment_id") Long id) {
 		String username = auth.getName();
 		UpdateCommentResponse response = commentService.updateComment(request, username, id);
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@DeleteMapping("/comments/{comment_id}")

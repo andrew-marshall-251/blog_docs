@@ -7,13 +7,12 @@ import com.andrew.blog.dtos.responses.SelfResponse;
 import com.andrew.blog.dtos.responses.UpdateSelfResponse;
 import com.andrew.blog.services.MeService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class MeController {
 	private final MeService meService;
 
@@ -25,9 +24,7 @@ public class MeController {
 	public ResponseEntity<SelfResponse> getSelf(Authentication auth) {
 		String username = auth.getName();
 		SelfResponse response = meService.getSelf(username);
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@PatchMapping("/users/me")
@@ -36,9 +33,7 @@ public class MeController {
 			Authentication auth) {
 		String username = auth.getName();
 		UpdateSelfResponse response = meService.updateSelf(request, username);
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@DeleteMapping("/users/me")
@@ -54,17 +49,13 @@ public class MeController {
 			Authentication auth) {
 		String username = auth.getName();
 		UpdateSelfResponse response = meService.updateSelfPassword(request, username);
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/users/me/posts")
 	public ResponseEntity<PostListResponse> getSelfPosts(Authentication auth) {
 		String username = auth.getName();
 		PostListResponse response = meService.getSelfPosts(username);
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.ok(response);
 	}
 }

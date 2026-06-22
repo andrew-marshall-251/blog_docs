@@ -7,7 +7,7 @@
 @out_of_range = 1000
 
 ### Create User for testing
-POST {{host}}/api/auth/admins
+POST {{host}}/api/v1/auth/admins
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 ### Login the User
-POST {{host}}/api/auth/login
+POST {{host}}/api/v1/auth/login
 Content-Type: application/json
 
 {
@@ -33,11 +33,11 @@ Content-Type: application/json
 %}
 
 ### Get Me
-GET {{host}}/api/users/me
+GET {{host}}/api/v1/users/me
 Authorization: Bearer {{userAccessToken}}
 
 ### Create Post 1
-POST {{host}}/api/posts
+POST {{host}}/api/v1/posts
 Authorization: Bearer {{userAccessToken}}
 Content-Type: application/json
 
@@ -48,7 +48,7 @@ Content-Type: application/json
 }
 
 ### Create Post 2
-POST {{host}}/api/posts
+POST {{host}}/api/v1/posts
 Authorization: Bearer {{userAccessToken}}
 Content-Type: application/json
 
@@ -59,7 +59,7 @@ Content-Type: application/json
 }
 
 ### Create Post 3
-POST {{host}}/api/posts
+POST {{host}}/api/v1/posts
 Authorization: Bearer {{userAccessToken}}
 Content-Type: application/json
 
@@ -70,12 +70,12 @@ Content-Type: application/json
 }
 
 ### Get My Posts
-GET {{host}}/api/users/me/posts
+GET {{host}}/api/v1/users/me/posts
 Authorization: Bearer {{userAccessToken}}
 
 ### Delete Self
-DELETE {{host}}/api/users/me
+DELETE {{host}}/api/v1/users/me
 Authorization: Bearer {{userAccessToken}}
 
 ### Get My Posts after delete
-GET {{host}}/api/users/{{user_id}}/posts
+GET {{host}}/api/v1/users/{{user_id}}/posts

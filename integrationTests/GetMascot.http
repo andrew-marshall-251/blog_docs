@@ -4,10 +4,10 @@
 @soft_deleted_404= 8
 
 ### Get Mascot
-GET {{host}}/api/mascots/{{mascot_id}}
+GET {{host}}/api/v1/mascots/{{mascot_id}}
 
 ### Get Mascot out of range error (expect 404)
-GET {{host}}/api/mascots/{{out_of_range}}
+GET {{host}}/api/v1/mascots/{{out_of_range}}
 
 ### Get Mascot that was soft deleted (expect 404)
-GET {{host}}/api/mascots/{{soft_deleted_404}}
+GET {{host}}/api/v1/mascots/{{soft_deleted_404}}

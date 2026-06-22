@@ -14,21 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1")
 public class CreateAdminController {
-	private CreateAdminService createAdminService;
+	private final CreateAdminService createAdminService;
 
 	public CreateAdminController(CreateAdminService createAdminService, CreateAdminServiceImpl createAdminServiceImpl) {
 		this.createAdminService = createAdminService;
 	}
-	@PostMapping("/admins")
+	@PostMapping("/auth/admins")
 	public ResponseEntity<CreateUserResponse> createAdmin(
 			@Valid @RequestBody CreateUserRequest request) {
 		System.out.println("hello");
 		CreateUserResponse response = createAdminService.createAdmin(request);
-		URI location = URI.create("/users/" + response.getUserId());
-		return ResponseEntity
-				.created(location)
-				.body(response);
+		URI location = URI.create("/api/v1/users/" + response.getUserId());
+		return ResponseEntity.created(location).body(response);
 	}
 }

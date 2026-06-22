@@ -14,9 +14,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("USERNAME_TAKEN");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.CONFLICT)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 
 	@ExceptionHandler(ThreadNameAlreadyTakenException.class)
@@ -24,9 +22,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("THREAD_NAME_TAKEN");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.CONFLICT)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 
 	@ExceptionHandler(EmailAlreadyTakenException.class)
@@ -34,9 +30,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("EMAIL_TAKEN");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.CONFLICT)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 
 	@ExceptionHandler(PostTitleAlreadyTakenException.class)
@@ -44,9 +38,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("POST_TITLE_TAKEN");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.CONFLICT)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 
 	@ExceptionHandler(MascotNameAlreadyTakenException.class)
@@ -54,9 +46,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("MASCOT_NAME_TAKEN");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.CONFLICT)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 
 	@ExceptionHandler(MascotNotFoundByIdException.class)
@@ -64,9 +54,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("MASCOT_NOT_FOUND");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.NOT_FOUND)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
 	@ExceptionHandler(CommentNotFoundByIdException.class)
@@ -74,9 +62,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("COMMENT_NOT_FOUND");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.NOT_FOUND)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
 	@ExceptionHandler(UserNotFoundByIdException.class)
@@ -84,9 +70,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("USER_NOT_FOUND");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.NOT_FOUND)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
 	@ExceptionHandler(UserNotFoundByUsernameException.class)
@@ -94,9 +78,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("USER_NOT_FOUND");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.NOT_FOUND)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
 	@ExceptionHandler(ThreadNotFoundByIdException.class)
@@ -104,9 +86,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("THREAD_NOT_FOUND");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.NOT_FOUND)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
 	@ExceptionHandler(PostNotFoundByIdException.class)
@@ -114,9 +94,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("POST_NOT_FOUND");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.NOT_FOUND)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
 	@ExceptionHandler(UsernameOrEmailNotFoundException.class)
@@ -124,9 +102,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("USER_NOT_FOUND");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.NOT_FOUND)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
 	@ExceptionHandler(RefreshDoesNotExistException.class)
@@ -134,19 +110,7 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("REFRESH_INVALID");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.FORBIDDEN)
-				.body(response);
-	}
-
-	@ExceptionHandler(IsNotAdminException.class)
-	public ResponseEntity<BasicErrorResponse> handleIsNotAdmin(IsNotAdminException e) {
-		BasicErrorResponse response = new BasicErrorResponse();
-		response.setCode("NOT_AUTHORIZED");
-		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.FORBIDDEN)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 	}
 
 	@ExceptionHandler(IsNotAuthorException.class)
@@ -154,8 +118,6 @@ public class GlobalExceptionHandler {
 		BasicErrorResponse response = new BasicErrorResponse();
 		response.setCode("NOT_AUTHORIZED");
 		response.setMessage(e.getMessage());
-		return ResponseEntity
-				.status(HttpStatus.FORBIDDEN)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 	}
 }

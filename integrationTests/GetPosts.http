@@ -1,4 +1,4 @@
 @host = http://localhost:8080
 
 ### Get All Posts
-GET {{host}}/api/posts
+GET {{host}}/api/v1/posts

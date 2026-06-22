@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -21,7 +22,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,11 +34,55 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
 		http
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.cors(Customizer.withDefaults())
 				.csrf(csrf -> csrf.disable())
+				.sessionManagement(session ->
+						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/**").permitAll()
+						// auth controller
+						.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/auth/refresh").authenticated()
+						// create admin controller
+						.requestMatchers(HttpMethod.POST, "/api/v1/auth/admins").hasRole("ADMIN")
+						// comments controller
+						.requestMatchers(HttpMethod.GET, "api/v1/posts/**/comments").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/posts/**/comments").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/v1/comments/**").permitAll()
+						.requestMatchers(HttpMethod.PATCH, "/api/v1/comments/**").authenticated()
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/comments/**").authenticated()
+						// mascot controller
+						.requestMatchers(HttpMethod.GET, "api/v1/mascots").permitAll()
+						.requestMatchers(HttpMethod.POST, "api/v1/mascots").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.GET, "api/v1/mascots/**").permitAll()
+						.requestMatchers(HttpMethod.PATCH, "api/v1/mascots/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.DELETE, "api/v1/mascots/**").hasRole("ADMIN")
+						// me controller
+						.requestMatchers(HttpMethod.GET, "api/v1/users/me").authenticated()
+						.requestMatchers(HttpMethod.GET, "api/v1/users/me/posts").authenticated()
+						.requestMatchers(HttpMethod.PATCH, "api/v1/users/me").authenticated()
+						.requestMatchers(HttpMethod.PATCH, "api/v1/users/me/password").authenticated()
+						.requestMatchers(HttpMethod.DELETE, "api/v1/users/me").authenticated()
+						// post controller
+						.requestMatchers(HttpMethod.GET, "api/v1/posts").permitAll()
+						.requestMatchers(HttpMethod.POST, "api/v1/posts").authenticated()
+						.requestMatchers(HttpMethod.GET, "api/v1/posts/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "api/v1/posts/**").authenticated()
+						.requestMatchers(HttpMethod.DELETE, "api/v1/posts/**").authenticated()
+						.requestMatchers(HttpMethod.GET, "api/v1/users/**/posts").permitAll()
+						.requestMatchers(HttpMethod.GET, "api/v1/threads/**/posts").permitAll()
+						// thread controller
+						.requestMatchers(HttpMethod.GET, "api/v1/threads").permitAll()
+						.requestMatchers(HttpMethod.POST, "api/v1/threads").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.GET, "api/v1/threads/**").permitAll()
+						.requestMatchers(HttpMethod.PATCH, "api/v1/threads/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.DELETE, "api/v1/threads/**").hasRole("ADMIN")
+						// user controller
+						.requestMatchers(HttpMethod.POST, "api/v1/users").permitAll()
+						.requestMatchers(HttpMethod.GET, "api/v1/users/**").permitAll()
+						.requestMatchers(HttpMethod.DELETE, "api/v1/users/**").hasRole("ADMIN")
+						// close the rest of the gateway
+						.anyRequest().denyAll()
 				);
 				// .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();

@@ -3,7 +3,7 @@
 @out_of_range = 1000
 
 ### Get Post
-GET {{host}}/api/posts/{{post_id}}
+GET {{host}}/api/v1/posts/{{post_id}}
 
 ### Get Post out of range error (expect 404)
-GET {{host}}/api/posts/{{out_of_range}}
+GET {{host}}/api/v1/posts/{{out_of_range}}

@@ -3,7 +3,7 @@
 @out_of_range = 1000
 
 ### Get Thread
-GET {{host}}/api/threads/{{thread_id}}/posts
+GET {{host}}/api/v1/threads/{{thread_id}}/posts
 
 ### Get Thread out of range error (expect 404)
 GET {{host}}/api/threads/{{out_of_range}}/posts

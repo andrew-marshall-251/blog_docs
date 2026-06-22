@@ -3,7 +3,7 @@
 @out_of_range = 1000
 
 ### Get User
-GET {{host}}/api/users/{{user_id}}
+GET {{host}}/api/v1/users/{{user_id}}
 
 ### Get User out of range error (expect 404)
-GET {{host}}/api/users/{{out_of_range}}
+GET {{host}}/api/v1/users/{{out_of_range}}

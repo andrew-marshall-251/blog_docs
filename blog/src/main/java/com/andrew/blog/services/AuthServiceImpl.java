@@ -17,7 +17,6 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -34,22 +33,19 @@ public class AuthServiceImpl implements AuthService {
 	private final Long expJwt = 900L; // 15 minutes
 	private final Long expRefresh = 2592000L; // one month
 
-	private RefreshTokenRepository refreshTokenRepository;
-	private UserRepository userRepository;
-	private AuthenticationManager authenticationManager;
-	private PasswordEncoder encoder;
-	private SecretKey signingKey;
+	private final RefreshTokenRepository refreshTokenRepository;
+	private final UserRepository userRepository;
+	private final AuthenticationManager authenticationManager;
+	private final SecretKey signingKey;
 
 	public AuthServiceImpl (
 			UserRepository userRepository,
 			AuthenticationManager authenticationManager,
 			SecretKey signingKey,
-			PasswordEncoder encoder,
 			RefreshTokenRepository refreshTokenRepository) {
 		this.userRepository = userRepository;
 		this.authenticationManager = authenticationManager;
 		this.signingKey = signingKey;
-		this.encoder = encoder;
 		this.refreshTokenRepository = refreshTokenRepository;
 	}
 

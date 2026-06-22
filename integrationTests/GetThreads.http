@@ -1,4 +1,4 @@
 @host = http://localhost:8080
 
 ### Get All Threads
-GET {{host}}/api/threads
+GET {{host}}/api/v1/threads
