@@ -2,8 +2,8 @@ package com.andrew.blog.dtos.responses;
 
 import com.andrew.blog.entities.Role;
 import lombok.AllArgsConstructor;
-import lombok.Setter;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 

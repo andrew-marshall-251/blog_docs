@@ -6,7 +6,6 @@ import com.andrew.blog.dtos.responses.CreateMascotResponse;
 import com.andrew.blog.dtos.responses.MascotListResponse;
 import com.andrew.blog.dtos.responses.MascotResponse;
 import com.andrew.blog.dtos.responses.UpdateMascotReponse;
-import jakarta.validation.Valid;
 
 public interface MascotService {
 	MascotListResponse getAllMascots();

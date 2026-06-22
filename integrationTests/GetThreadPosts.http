@@ -6,4 +6,4 @@
 GET {{host}}/api/v1/threads/{{thread_id}}/posts
 
 ### Get Thread out of range error (expect 404)
-GET {{host}}/api/threads/{{out_of_range}}/posts
+GET {{host}}/api/v1/threads/{{out_of_range}}/posts

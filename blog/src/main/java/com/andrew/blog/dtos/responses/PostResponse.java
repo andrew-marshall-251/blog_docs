@@ -2,8 +2,8 @@ package com.andrew.blog.dtos.responses;
 
 import com.andrew.blog.entities.Status;
 import lombok.AllArgsConstructor;
-import lombok.Setter;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 

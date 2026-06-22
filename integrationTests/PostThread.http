@@ -47,5 +47,5 @@ DELETE {{host}}/api/v1/threads/{{thread_id}}
 Authorization: Bearer {{accessToken}}
 
 ### Delete User
-DELETE {{host}}/api/users/me
+DELETE {{host}}/api/v1/users/me
 Authorization: Bearer {{accessToken}}

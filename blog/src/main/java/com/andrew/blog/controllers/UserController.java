@@ -22,7 +22,6 @@ public class UserController {
 	@PostMapping("/users")
 	public ResponseEntity<CreateUserResponse> createUser(
 			@Valid @RequestBody CreateUserRequest request) {
-		System.out.println("hello");
 		CreateUserResponse response = userService.createUser(request);
 		URI location = URI.create("/api/v1/users/" + response.getUserId());
 		return ResponseEntity.created(location).body(response);

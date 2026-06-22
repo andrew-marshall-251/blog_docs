@@ -18,13 +18,12 @@ import java.net.URI;
 public class CreateAdminController {
 	private final CreateAdminService createAdminService;
 
-	public CreateAdminController(CreateAdminService createAdminService, CreateAdminServiceImpl createAdminServiceImpl) {
+	public CreateAdminController(CreateAdminService createAdminService) {
 		this.createAdminService = createAdminService;
 	}
 	@PostMapping("/auth/admins")
 	public ResponseEntity<CreateUserResponse> createAdmin(
 			@Valid @RequestBody CreateUserRequest request) {
-		System.out.println("hello");
 		CreateUserResponse response = createAdminService.createAdmin(request);
 		URI location = URI.create("/api/v1/users/" + response.getUserId());
 		return ResponseEntity.created(location).body(response);

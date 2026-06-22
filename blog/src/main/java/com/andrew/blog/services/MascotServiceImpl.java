@@ -10,10 +10,8 @@ import com.andrew.blog.dtos.responses.MascotResponse;
 import com.andrew.blog.dtos.responses.UpdateMascotReponse;
 import com.andrew.blog.entities.Mascot;
 import com.andrew.blog.repositories.MascotRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,12 +78,13 @@ public class MascotServiceImpl implements MascotService {
 	public UpdateMascotReponse updateMascot(
 			UpdateMascotRequest request,
 			Long id) {
-		System.out.println("hi");
 		// errors
 		Mascot mascot = mascotRepository.findById(id)
 				.orElseThrow(() -> new MascotNotFoundByIdException(id));
-		if (mascotRepository.existsByName(request.getMascotName()) ||
-		request.getMascotName() == "[deletedMascot]") { // reserved
+		if (mascotRepository.existsByName(request.getMascotName())) { // reserved
+			throw new MascotNameAlreadyTakenException(request.getMascotName());
+		}
+		if (request.getMascotName().equals("[deletedMascot]")) { // reserved
 			throw new MascotNameAlreadyTakenException(request.getMascotName());
 		}
 		// update

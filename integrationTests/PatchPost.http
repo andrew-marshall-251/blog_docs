@@ -35,7 +35,7 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "title": "Traveling to the Malaysian Temple",
+  "title": "Traveling to the the Malaysian Temple",
   "body": "We went to the malaysian temple today",
   "threadId": 1
 }
@@ -57,19 +57,19 @@ Content-Type: application/json
 }
 
 ### Update Post 2
-PATCH {{host}}/api/posts/{{post_id}}
+PATCH {{host}}/api/v1/posts/{{post_id}}
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "title": "Let's Go to Space",
+  "title": "Let's Go tothethe Space",
   "body": "We went to the space temple"
 }
 
 ### Delete Post
-DELETE {{host}}/api/posts/{{post_id}}
+DELETE {{host}}/api/v1/posts/{{post_id}}
 Authorization: Bearer {{accessToken}}
 
 ### Delete User
-DELETE {{host}}/api/users/me
+DELETE {{host}}/api/v1/users/me
 Authorization: Bearer {{accessToken}}

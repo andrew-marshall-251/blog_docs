@@ -3,7 +3,7 @@
 @out_of_range = 1000
 
 ### Get Comment
-GET {{host}}/api/comments/{{comment_id}}
+GET {{host}}/api/v1/comments/{{comment_id}}
 
 ### Get Comment Out of Range (expected 404)
-GET {{host}}/api/comments/{{out_of_range}}
+GET {{host}}/api/v1/comments/{{out_of_range}}

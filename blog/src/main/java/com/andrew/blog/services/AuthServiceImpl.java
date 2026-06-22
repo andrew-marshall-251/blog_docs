@@ -18,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +28,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -79,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
 		Instant expJwt = now.plusSeconds(expiresIn);
 		String accessToken = Jwts.builder()
 				.subject(user.getUsername())
-				.claim("roles", roles)
+				.claim("roles", roles.stream().map(Role::name).collect(Collectors.toList()))
 				.issuedAt(Date.from(now))
 				.expiration(Date.from(expJwt))
 				.signWith(signingKey, Jwts.SIG.HS256)
@@ -88,6 +90,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
+	@Transactional
 	public LoginResponse login(LoginRequest request) {
 		Authentication authRequest = new UsernamePasswordAuthenticationToken(
 						request.getUsernameOrEmail(),
@@ -111,6 +114,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
+	@Transactional
 	public RefreshResponse refresh(RefreshRequest request) {
 		RefreshToken refreshToken = refreshTokenRepository.findByRefreshTokenHash(sha256(request.getRefreshToken()))
 				.orElseThrow(() -> new RefreshDoesNotExistException("Refresh Token does not exist"));
@@ -123,6 +127,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
+	@Transactional
 	public void revokeRefresh(String username) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));

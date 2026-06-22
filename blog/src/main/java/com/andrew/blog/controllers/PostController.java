@@ -2,8 +2,8 @@ package com.andrew.blog.controllers;
 
 import com.andrew.blog.dtos.requests.CreatePostRequest;
 import com.andrew.blog.dtos.requests.UpdatePostRequest;
-import com.andrew.blog.dtos.responses.PostListResponse;
 import com.andrew.blog.dtos.responses.CreatePostResponse;
+import com.andrew.blog.dtos.responses.PostListResponse;
 import com.andrew.blog.dtos.responses.PostResponse;
 import com.andrew.blog.dtos.responses.UpdatePostResponse;
 import com.andrew.blog.services.PostService;
@@ -25,7 +25,6 @@ public class PostController {
 
 	@GetMapping("/posts")
 	public ResponseEntity<PostListResponse> getAllPosts() {
-		System.out.println("hi");
 		PostListResponse response = postService.getAllPosts();
 		return ResponseEntity.ok(response);
 	}

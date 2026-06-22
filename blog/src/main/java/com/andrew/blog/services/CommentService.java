@@ -6,7 +6,6 @@ import com.andrew.blog.dtos.responses.CommentListResponse;
 import com.andrew.blog.dtos.responses.CommentResponse;
 import com.andrew.blog.dtos.responses.CreateCommentResponse;
 import com.andrew.blog.dtos.responses.UpdateCommentResponse;
-import jakarta.validation.Valid;
 
 public interface CommentService {
 	void deleteComment(Long id, String auth);

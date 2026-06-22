@@ -6,6 +6,7 @@ import com.andrew.blog.entities.User;
 import com.andrew.blog.repositories.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
@@ -19,7 +20,9 @@ public class CreateAdminServiceImpl implements CreateAdminService {
 		this.userRepository = userRepository;
 		this.userService = userService;
 	}
+
 	@Override
+	@Transactional
 	public CreateUserResponse createAdmin(
 			@Valid @RequestBody CreateUserRequest request) {
 		User newUser = userService.getUserFromRequest(request, true);

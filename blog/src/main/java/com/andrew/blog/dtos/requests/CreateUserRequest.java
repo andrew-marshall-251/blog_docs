@@ -2,8 +2,8 @@ package com.andrew.blog.dtos.requests;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Setter;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter @Setter
 @AllArgsConstructor

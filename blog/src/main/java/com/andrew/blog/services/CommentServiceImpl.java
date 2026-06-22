@@ -1,6 +1,9 @@
 package com.andrew.blog.services;
 
-import com.andrew.blog.dtos.errors.*;
+import com.andrew.blog.dtos.errors.CommentNotFoundByIdException;
+import com.andrew.blog.dtos.errors.IsNotAuthorException;
+import com.andrew.blog.dtos.errors.PostNotFoundByIdException;
+import com.andrew.blog.dtos.errors.UserNotFoundByUsernameException;
 import com.andrew.blog.dtos.requests.CreateCommentRequest;
 import com.andrew.blog.dtos.requests.UpdateCommentRequest;
 import com.andrew.blog.dtos.responses.CommentListResponse;
@@ -14,6 +17,7 @@ import com.andrew.blog.repositories.CommentRepository;
 import com.andrew.blog.repositories.PostRepository;
 import com.andrew.blog.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,6 +77,7 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
+	@Transactional
 	public CreateCommentResponse createComment(
 			CreateCommentRequest request,
 			String username,
@@ -114,6 +119,7 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
+	@Transactional
 	public UpdateCommentResponse updateComment(
 			UpdateCommentRequest request,
 			String username,
@@ -126,7 +132,7 @@ public class CommentServiceImpl implements CommentService {
 		Long postId = comment.getPost().getId();
 		Post post = postRepository.findById(postId)
 				.orElseThrow(() -> new PostNotFoundByIdException(postId));
-		if (user.getId() != comment.getUser().getId()) {
+		if (!user.getId().equals(comment.getUser().getId())) {
 			throw new IsNotAuthorException(username);
 		}
 		// update

@@ -2,10 +2,8 @@ package com.andrew.blog.services;
 
 import com.andrew.blog.dtos.requests.CreateUserRequest;
 import com.andrew.blog.dtos.responses.CreateUserResponse;
-import com.andrew.blog.dtos.responses.PostListResponse;
 import com.andrew.blog.dtos.responses.UserResponse;
 import com.andrew.blog.entities.User;
-import jakarta.validation.Valid;
 
 public interface UserService {
 	CreateUserResponse createUser(CreateUserRequest request);
@@ -14,4 +12,6 @@ public interface UserService {
 	User getUserFromRequest(CreateUserRequest request, boolean isAdmin);
 	User getUserFromRequest(CreateUserRequest request);
 	void addFirstAdmin();
+	boolean validUsername(String username);
+	boolean validEmail(String email);
 }

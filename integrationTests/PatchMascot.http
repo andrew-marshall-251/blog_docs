@@ -5,7 +5,7 @@
 @email = buffalo@admin.com
 
 ### Create Admin for testing
-POST {{host}}/api/auth/admins
+POST {{host}}/api/v1/auth/admins
 Content-Type: application/json
 
 {
@@ -17,7 +17,7 @@ Content-Type: application/json
 }
 
 ### Login the Admin
-POST {{host}}/api/auth/login
+POST {{host}}/api/v1/auth/login
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 %}
 
 ### Create Mascot
-POST {{host}}/api/mascots
+POST {{host}}/api/v1/mascots
 Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
@@ -44,7 +44,7 @@ Content-Type: application/json
 %}
 
 ### Update Mascot
-PATCH {{host}}/api/mascots/{{mascot_id}}
+PATCH {{host}}/api/v1/mascots/{{mascot_id}}
 Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
@@ -54,7 +54,7 @@ Content-Type: application/json
 }
 
 ### Update Mascot
-PATCH {{host}}/api/mascots/{{mascot_id}}
+PATCH {{host}}/api/v1/mascots/{{mascot_id}}
 Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
@@ -63,7 +63,7 @@ Content-Type: application/json
 }
 
 ### Update Mascot
-PATCH {{host}}/api/mascots/{{mascot_id}}
+PATCH {{host}}/api/v1/mascots/{{mascot_id}}
 Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
@@ -71,9 +71,9 @@ Content-Type: application/json
   "mascotImgUrl": "https://birdphoto.com/zebra"
 }
 ### Delete Mascot
-DELETE {{host}}/api/mascots/{{mascot_id}}
+DELETE {{host}}/api/v1/mascots/{{mascot_id}}
 Authorization: Bearer {{adminAccessToken}}
 
 ### Delete Admin
-DELETE {{host}}/api/users/me
+DELETE {{host}}/api/v1/users/me
 Authorization: Bearer {{adminAccessToken}}

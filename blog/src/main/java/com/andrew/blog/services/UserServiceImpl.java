@@ -1,6 +1,9 @@
 package com.andrew.blog.services;
 
-import com.andrew.blog.dtos.errors.*;
+import com.andrew.blog.dtos.errors.EmailAlreadyTakenException;
+import com.andrew.blog.dtos.errors.MascotNotFoundByIdException;
+import com.andrew.blog.dtos.errors.UserNotFoundByIdException;
+import com.andrew.blog.dtos.errors.UsernameAlreadyTakenException;
 import com.andrew.blog.dtos.requests.CreateUserRequest;
 import com.andrew.blog.dtos.responses.CreateUserResponse;
 import com.andrew.blog.dtos.responses.UserResponse;
@@ -39,14 +42,32 @@ public class UserServiceImpl implements UserService {
 		this.commentRepository = commentRepository;
 	}
 
+	public boolean validUsername(String username) {
+		if (userRepository.existsByUsername(username)) {
+			return false;
+		}
+		if (username.equals("[deletedUser]")) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean validEmail(String email) {
+		if (userRepository.existsByEmail(email)) {
+			return false;
+		}
+		if (email.equals("deleted@user.com")) {
+			return false;
+		}
+		return true;
+	}
+
 	@Override
 	public User getUserFromRequest(CreateUserRequest request, boolean isAdmin) {
-		if (userRepository.existsByUsername(request.getUsername())
-			|| request.getUsername().equals("[deletedUser]")) {
+		if (!validUsername(request.getUsername())) {
 			throw new UsernameAlreadyTakenException(request.getUsername());
 		}
-		if (userRepository.existsByEmail(request.getEmail())
-			|| request.getEmail().equals("deleted@user.com")) {
+		if (!validEmail(request.getEmail())) {
 			throw new EmailAlreadyTakenException(request.getEmail());
 		}
 		Mascot mascot = mascotRepository.findById(request.getMascotId())
@@ -88,6 +109,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public CreateUserResponse createUser(
 			@Valid @RequestBody CreateUserRequest request) {
 		User newUser = getUserFromRequest(request);

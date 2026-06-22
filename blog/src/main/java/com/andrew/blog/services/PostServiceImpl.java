@@ -12,6 +12,7 @@ import com.andrew.blog.repositories.PostRepository;
 import com.andrew.blog.repositories.ThreadRepository;
 import com.andrew.blog.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.Normalizer;
 import java.util.List;
@@ -74,6 +75,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional
 	public CreatePostResponse createPost(
 			CreatePostRequest request,
 			String username) {
@@ -136,6 +138,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional
 	public UpdatePostResponse updatePost(
 			UpdatePostRequest request,
 			String authorName,
@@ -145,7 +148,7 @@ public class PostServiceImpl implements PostService {
 				.orElseThrow(() -> new PostNotFoundByIdException(id));
 		User author = userRepository.findByUsername(authorName)
 				.orElseThrow(() -> new UserNotFoundByUsernameException(authorName));
-		if (author.getId() != post.getAuthor().getId()) {
+		if (!author.getId().equals(post.getAuthor().getId())) {
 			throw new IsNotAuthorException(authorName);
 		}
 		// update
@@ -188,7 +191,7 @@ public class PostServiceImpl implements PostService {
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));
 		Post post = postRepository.findById(id)
 				.orElseThrow(() -> new PostNotFoundByIdException(id));
-		if (user.getId() != post.getAuthor().getId()) {
+		if (!user.getId().equals(post.getAuthor().getId())) {
 			throw new IsNotAuthorException(user.getUsername());
 		}
 		// delete

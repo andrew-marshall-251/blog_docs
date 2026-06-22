@@ -1,9 +1,5 @@
 package com.andrew.blog.config;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import com.andrew.blog.repositories.UserRepository;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,11 +18,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Configuration
 public class SecurityConfig {
@@ -44,47 +44,56 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
 						.requestMatchers(HttpMethod.DELETE, "/api/v1/auth/refresh").authenticated()
 						// create admin controller
-						.requestMatchers(HttpMethod.POST, "/api/v1/auth/admins").hasRole("ADMIN")
+						// REMEMBER TO CHANGE BEFORE DEPLOYMENT
+						// REMEMBER TO CHANGE BEFORE DEPLOYMENT
+//						.requestMatchers(HttpMethod.POST, "/api/v1/auth/admins").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.POST, "/api/v1/auth/admins").permitAll()
+						// mascot controller
+						.requestMatchers(HttpMethod.GET, "/api/v1/mascots").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/mascots").hasRole("ADMIN")
+						// me controller
+						.requestMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/v1/users/me/posts").authenticated()
+						.requestMatchers(HttpMethod.PATCH, "/api/v1/users/me").authenticated()
+						.requestMatchers(HttpMethod.PATCH, "/api/v1/users/me/password").authenticated()
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/users/me").authenticated()
+						// post controller
+						.requestMatchers(HttpMethod.GET, "/api/v1/posts").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/posts").authenticated()
+						// thread controller
+						.requestMatchers(HttpMethod.GET, "/api/v1/threads").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/threads").hasRole("ADMIN")
+						// user controller
+						.requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+						//==================
+						// WILD CARD SECTION
+						//==================
 						// comments controller
-						.requestMatchers(HttpMethod.GET, "api/v1/posts/**/comments").permitAll()
-						.requestMatchers(HttpMethod.POST, "/api/v1/posts/**/comments").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/v1/posts/*/comments").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/posts/*/comments").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/v1/comments/**").permitAll()
 						.requestMatchers(HttpMethod.PATCH, "/api/v1/comments/**").authenticated()
 						.requestMatchers(HttpMethod.DELETE, "/api/v1/comments/**").authenticated()
 						// mascot controller
-						.requestMatchers(HttpMethod.GET, "api/v1/mascots").permitAll()
-						.requestMatchers(HttpMethod.POST, "api/v1/mascots").hasRole("ADMIN")
-						.requestMatchers(HttpMethod.GET, "api/v1/mascots/**").permitAll()
-						.requestMatchers(HttpMethod.PATCH, "api/v1/mascots/**").hasRole("ADMIN")
-						.requestMatchers(HttpMethod.DELETE, "api/v1/mascots/**").hasRole("ADMIN")
-						// me controller
-						.requestMatchers(HttpMethod.GET, "api/v1/users/me").authenticated()
-						.requestMatchers(HttpMethod.GET, "api/v1/users/me/posts").authenticated()
-						.requestMatchers(HttpMethod.PATCH, "api/v1/users/me").authenticated()
-						.requestMatchers(HttpMethod.PATCH, "api/v1/users/me/password").authenticated()
-						.requestMatchers(HttpMethod.DELETE, "api/v1/users/me").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/v1/mascots/**").permitAll()
+						.requestMatchers(HttpMethod.PATCH, "/api/v1/mascots/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/mascots/**").hasRole("ADMIN")
 						// post controller
-						.requestMatchers(HttpMethod.GET, "api/v1/posts").permitAll()
-						.requestMatchers(HttpMethod.POST, "api/v1/posts").authenticated()
-						.requestMatchers(HttpMethod.GET, "api/v1/posts/**").permitAll()
-						.requestMatchers(HttpMethod.POST, "api/v1/posts/**").authenticated()
-						.requestMatchers(HttpMethod.DELETE, "api/v1/posts/**").authenticated()
-						.requestMatchers(HttpMethod.GET, "api/v1/users/**/posts").permitAll()
-						.requestMatchers(HttpMethod.GET, "api/v1/threads/**/posts").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
+						.requestMatchers(HttpMethod.PATCH, "/api/v1/posts/**").authenticated()
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/posts/**").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/v1/users/*/posts").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/v1/threads/*/posts").permitAll()
 						// thread controller
-						.requestMatchers(HttpMethod.GET, "api/v1/threads").permitAll()
-						.requestMatchers(HttpMethod.POST, "api/v1/threads").hasRole("ADMIN")
-						.requestMatchers(HttpMethod.GET, "api/v1/threads/**").permitAll()
-						.requestMatchers(HttpMethod.PATCH, "api/v1/threads/**").hasRole("ADMIN")
-						.requestMatchers(HttpMethod.DELETE, "api/v1/threads/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.GET, "/api/v1/threads/**").permitAll()
+						.requestMatchers(HttpMethod.PATCH, "/api/v1/threads/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/threads/**").hasRole("ADMIN")
 						// user controller
-						.requestMatchers(HttpMethod.POST, "api/v1/users").permitAll()
-						.requestMatchers(HttpMethod.GET, "api/v1/users/**").permitAll()
-						.requestMatchers(HttpMethod.DELETE, "api/v1/users/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasRole("ADMIN")
 						// close the rest of the gateway
-						.anyRequest().denyAll()
-				);
-				// .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+						.anyRequest().denyAll())
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 
@@ -106,7 +115,7 @@ public class SecurityConfig {
 				"http://127.0.0.1:5173",
 				"null"
 		));
-		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
+		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		config.setAllowedHeaders(Arrays.asList("*"));
 		config.setAllowCredentials(true);
 

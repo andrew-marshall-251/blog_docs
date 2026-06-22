@@ -1,11 +1,11 @@
 package com.andrew.blog.services;
 
+import com.andrew.blog.dtos.errors.EmailAlreadyTakenException;
 import com.andrew.blog.dtos.errors.MascotNotFoundByIdException;
-import com.andrew.blog.dtos.errors.UserNotFoundByIdException;
 import com.andrew.blog.dtos.errors.UserNotFoundByUsernameException;
+import com.andrew.blog.dtos.errors.UsernameAlreadyTakenException;
 import com.andrew.blog.dtos.requests.UpdateSelfPasswordRequest;
 import com.andrew.blog.dtos.requests.UpdateSelfRequest;
-import com.andrew.blog.dtos.responses.PostExcerptResponse;
 import com.andrew.blog.dtos.responses.PostListResponse;
 import com.andrew.blog.dtos.responses.SelfResponse;
 import com.andrew.blog.dtos.responses.UpdateSelfResponse;
@@ -23,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,6 +33,7 @@ public class MeServiceImpl implements MeService {
 	private final PasswordEncoder encoder;
 	private final PostRepository postRepository;
 	private final PostService postService;
+	private final UserService userService;
 	private final RefreshTokenRepository refreshTokenRepository;
 
 	public MeServiceImpl(
@@ -43,6 +43,7 @@ public class MeServiceImpl implements MeService {
 			PasswordEncoder encoder,
 			PostRepository postRepository,
 			PostService postService,
+			UserService userService,
 			RefreshTokenRepository refreshTokenRepository) {
 		this.userRepository = userRepository;
 		this.mascotRepository = mascotRepository;
@@ -50,6 +51,7 @@ public class MeServiceImpl implements MeService {
 		this.encoder = encoder;
 		this.postRepository = postRepository;
 		this.postService = postService;
+		this.userService = userService;
 		this.refreshTokenRepository = refreshTokenRepository;
 	}
 
@@ -68,6 +70,7 @@ public class MeServiceImpl implements MeService {
 	}
 
 	@Override
+	@Transactional
 	public UpdateSelfResponse updateSelf(
 			UpdateSelfRequest request,
 			String username) {
@@ -76,9 +79,15 @@ public class MeServiceImpl implements MeService {
 				.orElseThrow(() -> new UserNotFoundByUsernameException(username));
 		// update
 		if (request.getUsername() != null) {
+			if (!userService.validUsername(request.getUsername())) {
+				throw new UsernameAlreadyTakenException(request.getUsername());
+			}
 			user.setUsername(request.getUsername());
 		}
 		if (request.getEmail() != null) {
+			if (!userService.validEmail(request.getEmail())) {
+				throw new EmailAlreadyTakenException(request.getEmail());
+			}
 			user.setEmail(request.getEmail());
 		}
 		if (request.getMascotId() != null) {
@@ -114,6 +123,7 @@ public class MeServiceImpl implements MeService {
 	}
 
 	@Override
+	@Transactional
 	public UpdateSelfResponse updateSelfPassword(
 			UpdateSelfPasswordRequest request,
 			String username) {

@@ -2,7 +2,10 @@ package com.andrew.blog.controllers;
 
 import com.andrew.blog.dtos.requests.CreateThreadRequest;
 import com.andrew.blog.dtos.requests.UpdateThreadRequest;
-import com.andrew.blog.dtos.responses.*;
+import com.andrew.blog.dtos.responses.CreateThreadResponse;
+import com.andrew.blog.dtos.responses.ThreadListResponse;
+import com.andrew.blog.dtos.responses.ThreadResponse;
+import com.andrew.blog.dtos.responses.UpdateThreadResponse;
 import com.andrew.blog.services.ThreadService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

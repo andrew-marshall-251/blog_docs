@@ -30,7 +30,7 @@ Content-Type: application/json
 %}
 
 ### Create Post
-POST {{host}}/api/posts
+POST {{host}}/api/v1/posts
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -45,9 +45,9 @@ Content-Type: application/json
 %}
 
 ### Delete Post
-DELETE {{host}}/api/posts/{{post_id}}
+DELETE {{host}}/api/v1/posts/{{post_id}}
 Authorization: Bearer {{accessToken}}
 
 ### Delete User
-DELETE {{host}}/api/users/me
+DELETE {{host}}/api/v1/users/me
 Authorization: Bearer {{accessToken}}
