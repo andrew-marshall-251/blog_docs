@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -36,15 +37,20 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
 		http
 				.cors(Customizer.withDefaults())
+				.csrf(csrf -> csrf.disable())
 				.sessionManagement(session ->
 						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/api/v1/auth/**").permitAll()
-						.requestMatchers("/api/v1/comments/**").permitAll()
-						.requestMatchers("/api/v1/mascots/**").permitAll()
-						.requestMatchers("/api/v1/posts/**").permitAll()
-						.requestMatchers("/api/v1/threads/**").permitAll()
-						.requestMatchers("/api/v1/users/**").permitAll()
+						.requestMatchers(HttpMethod.GET,"/api/v1/comments/**").permitAll()
+						.requestMatchers(HttpMethod.GET,"/api/v1/mascots/**").permitAll()
+						.requestMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
+						.requestMatchers(HttpMethod.GET,"/api/v1/threads/**").permitAll()
+						.requestMatchers(HttpMethod.GET,"/api/v1/users/**").permitAll()
+						.requestMatchers(HttpMethod.POST,"/api/v1/auth/**").permitAll()
+						.requestMatchers(HttpMethod.POST,"/api/v1/comments/**").permitAll()
+						.requestMatchers(HttpMethod.POST,"/api/v1/posts/**").permitAll()
+						.requestMatchers(HttpMethod.POST,"/api/v1/users/**").permitAll()
+						.requestMatchers("/api/v1/**").authenticated()
 						.anyRequest().denyAll())
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
